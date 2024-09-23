@@ -71,3 +71,28 @@ export async function getHabit(habitId: number): Promise<DetailedHabit> {
 
   return data;
 }
+
+export async function createHabitEntry(habitId: number, date: Date) {
+  console.log(date);
+  try {
+    await fetch(`${baseUrl}/habitEntry`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ habitId, date }),
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function deleteHabitEntry(entryId: number) {
+  try {
+    await fetch(`${baseUrl}/habitEntry/${entryId}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
