@@ -6,6 +6,7 @@ require (
 	github.com/charmbracelet/log v0.4.0
 	github.com/mattn/go-sqlite3 v1.14.23
 	github.com/pressly/goose/v3 v3.22.1
+	golang.org/x/text v0.18.0
 )
 
 require (

@@ -193,6 +193,26 @@ func run(w io.Writer, args cmdArgs) error {
 		json.NewEncoder(w).Encode(habitEntry)
 	})
 
+	mux.HandleFunc("DELETE /api/habit/{habitId}", func(w http.ResponseWriter, r *http.Request) {
+		habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
+		if err != nil {
+			logger.Error("Failed to parse habitId", slog.Any("error", err))
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		habit, err := db.DeleteHabit(habitId)
+		if err != nil {
+			logger.Error("Failed to delete habit", slog.Any("error", err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		logger.Info("Deleted habit", slog.Int64("habitId", habitId))
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(habit)
+	})
+
 	mux.HandleFunc("DELETE /api/habitEntry/{entryId}", func(w http.ResponseWriter, r *http.Request) {
 		entryId, err := strconv.ParseInt(r.PathValue("entryId"), 10, 64)
 		if err != nil {

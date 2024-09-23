@@ -4,6 +4,8 @@ import (
 	"context"
 
 	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type Habit struct {
@@ -55,11 +57,25 @@ func (s Sqlite) GetHabit(id int64) (DetailedHabit, error) {
 	}, nil
 }
 
+func (s Sqlite) DeleteHabit(id int64) (Habit, error) {
+	ctx := context.Background()
+	habit, err := s.queries.DeleteHabit(ctx, id)
+	if err != nil {
+		return Habit{}, err
+	}
+
+	return Habit{
+		Id:   habit.ID,
+		Name: habit.Name,
+	}, nil
+}
+
 func (s Sqlite) CreateHabit(userId int64, name string) (Habit, error) {
 	ctx := context.Background()
+	caser := cases.Title(language.English)
 	habit, err := s.queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
 		UserID: userId,
-		Name:   name,
+		Name:   caser.String(name),
 	})
 
 	if err != nil {

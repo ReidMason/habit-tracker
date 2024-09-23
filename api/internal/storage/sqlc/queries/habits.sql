@@ -9,3 +9,7 @@ INSERT INTO habits (user_id, name, description) VALUES (?, ?, ?) RETURNING *;
 -- name: GetHabit :one
 -- Retrieve a habit by ID
 SELECT * FROM habits WHERE id = ?;
+
+-- name: DeleteHabit :one
+-- Delete a habit by ID
+DELETE FROM habits WHERE id = ? RETURNING *;

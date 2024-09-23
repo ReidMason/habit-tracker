@@ -35,6 +35,25 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 	return i, err
 }
 
+const deleteHabit = `-- name: DeleteHabit :one
+DELETE FROM habits WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at
+`
+
+// Delete a habit by ID
+func (q *Queries) DeleteHabit(ctx context.Context, id int64) (Habit, error) {
+	row := q.db.QueryRowContext(ctx, deleteHabit, id)
+	var i Habit
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getHabit = `-- name: GetHabit :one
 SELECT id, user_id, name, description, created_at, updated_at FROM habits WHERE id = ?
 `
