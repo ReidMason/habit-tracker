@@ -1,0 +1,2 @@
+sqlc-generate:
+  cd internal/storage/sqlc && sqlc generate 

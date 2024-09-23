@@ -1,0 +1,11 @@
+-- name: GetHabits :many
+-- Retrieve all habits for a user
+SELECT * FROM habits WHERE user_id = ?;
+
+-- name: CreateHabit :one
+-- Create a new habit
+INSERT INTO habits (user_id, name, description) VALUES (?, ?, ?) RETURNING *;
+
+-- name: GetHabit :one
+-- Retrieve a habit by ID
+SELECT * FROM habits WHERE id = ?;
