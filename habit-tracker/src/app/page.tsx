@@ -78,12 +78,8 @@ export default function Home() {
           </form>
         </div>
 
-        <div className="flex flex-col gap-2">
-          {habits.map((habit) => (
-            <div className="border p-4 rounded-xl">
-              <Tracker key={habit.id} habitId={habit.id} />
-            </div>
-          ))}
+        <div className="border p-4 rounded-xl">
+          <Tracker habitIds={habits.map((x) => x.id)} />
         </div>
       </main>
     </div>

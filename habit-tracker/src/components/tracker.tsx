@@ -1,93 +1,60 @@
-import {
-  createHabitEntry,
-  deleteHabitEntry,
-  type DetailedHabit,
-  getHabit,
-} from "@/lib/api";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import HabitRow from "./habitRow";
 
-export default function tracker({ habitId }: { habitId: number }) {
-  const [habit, setHabit] = useState<DetailedHabit>();
+interface TrackerProps {
+  habitIds: number[];
+}
 
-  const fetchHabit = async () => {
-    const response = await getHabit(habitId);
-    setHabit(response);
-    console.log(response);
-  };
+const dateMatch = (date: Date, date2: Date) => {
+  return date.toDateString() === date2.toDateString();
+};
 
-  const getWeekDates = () => {
-    const weekDates = [];
-    const currentDate = new Date();
-    const dayOfWeek = currentDate.getDay();
-    const diff = currentDate.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is sunday
-    const monday = new Date(currentDate.setDate(diff));
-    for (let i = 0; i < 7; i++) {
-      weekDates.push(new Date(monday));
-      monday.setDate(monday.getDate() + 1);
+export default function tracker({ habitIds }: TrackerProps) {
+  const currentDate = new Date();
+
+  const getDaysInMonth = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const date = new Date(year, month, 1);
+    const days = [];
+    while (date.getMonth() === month) {
+      days.push(new Date(date));
+      date.setDate(date.getDate() + 1);
     }
-    return weekDates;
+    return days;
   };
 
-  const getDayName = (date: Date) => {
-    return date.toLocaleDateString("en-gb", { weekday: "short" });
+  const getMonthName = () => {
+    const date = new Date();
+    return date.toLocaleString("default", { month: "long" });
   };
-
-  const getMatchingEntry = (date: Date) => {
-    return habit?.entries.find((entry) => {
-      return new Date(entry.date).toDateString() === date.toDateString();
-    });
-  };
-
-  const addEntry = async (date: Date) => {
-    date = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
-    );
-    createHabitEntry(habitId, date);
-    fetchHabit();
-  };
-
-  const removeEntry = async (entryId: number) => {
-    deleteHabitEntry(entryId);
-    fetchHabit();
-  };
-
-  useEffect(() => {
-    fetchHabit();
-  }, []);
 
   return (
     <>
-      {habit !== undefined && (
-        <div>
-          <p>Habit: {habit.name}</p>
-
-          <div className="grid grid-cols-7">
-            {getWeekDates().map((date) => (
-              <div key={date.toJSON()}>
-                <p>{getDayName(date)}</p>
-              </div>
+      <table>
+        <thead>
+          <tr>
+            <th className="ml-32 text-xl font-semibold mb-2">
+              {getMonthName()}
+            </th>
+            {getDaysInMonth().map((date) => (
+              <th
+                key={date.toJSON()}
+                className={`${dateMatch(date, new Date()) ? "bg-secondary ring" : ""} h-12 w-12 border`}
+              >
+                {date.getDate()}
+              </th>
             ))}
+          </tr>
+        </thead>
 
-            {getWeekDates().map((date) => {
-              const entry = getMatchingEntry(date);
-
-              if (entry === undefined) {
-                return (
-                  <div key={date.toJSON()}>
-                    <button onClick={() => addEntry(date)}>❌</button>
-                  </div>
-                );
-              } else {
-                return (
-                  <div key={date.toJSON()}>
-                    <button onClick={() => removeEntry(entry.id)}>✅</button>
-                  </div>
-                );
-              }
-            })}
-          </div>
-        </div>
-      )}
+        <tbody>
+          {habitIds.map((habitId) => (
+            <HabitRow habitId={habitId} key={habitId} />
+          ))}
+        </tbody>
+      </table>
     </>
   );
 }
