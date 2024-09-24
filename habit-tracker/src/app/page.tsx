@@ -27,9 +27,8 @@ export default function Home() {
     if (!newHabit || !newHabit.trim()) return;
 
     setState("loading");
-    const response = await createHabit(userId, newHabit);
+    await createHabit(userId, newHabit);
     setNewHabit("");
-    console.log(response);
 
     fetchHabits();
     setState("idle");
@@ -48,7 +47,7 @@ export default function Home() {
 
   return (
     <div>
-      <main className="p-28">
+      <main>
         <div className="p-4 border rounded-xl">
           <h2 className="font-semibold text-xl">Habits</h2>
           <ul className="max-w-sm flex flex-col gap-2">

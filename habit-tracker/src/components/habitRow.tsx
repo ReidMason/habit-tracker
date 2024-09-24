@@ -8,25 +8,25 @@ import React, { useEffect, useState } from "react";
 
 interface HabitRowProps {
   habitId: number;
+  selectedDate: Date;
 }
 
-const dateMatch = (date: Date, date2: Date) => {
+const dateMatch = (date: Date, date2: Date): boolean => {
   return date.toDateString() === date2.toDateString();
 };
 
-export default function habitRow({ habitId }: HabitRowProps) {
+export default function habitRow({ habitId, selectedDate }: HabitRowProps) {
   const [habit, setHabit] = useState<DetailedHabit>();
+  const currentDate = new Date();
 
   const fetchHabit = async () => {
     const response = await getHabit(habitId);
     setHabit(response);
   };
 
-  const currentDate = new Date();
-
   const getDaysInMonth = () => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
 
     const date = new Date(year, month, 1);
     const days = [];
@@ -79,10 +79,7 @@ export default function habitRow({ habitId }: HabitRowProps) {
 
             if (entry !== undefined) {
               return (
-                <td
-                  key={date.toJSON()}
-                  className={`${successColour} w-12 h-12`}
-                >
+                <td key={date.toJSON()} className={`${successColour} h-12`}>
                   <button
                     onClick={() => removeEntry(entry.id)}
                     className="w-full h-full"
@@ -91,7 +88,7 @@ export default function habitRow({ habitId }: HabitRowProps) {
               );
             } else if (dateMatch(date, currentDate)) {
               return (
-                <td key={date.toJSON()} className="bg-gray-300 w-12 h-12">
+                <td key={date.toJSON()} className="bg-gray-300 h-12">
                   <button
                     onClick={() => addEntry(date)}
                     className="w-full h-full"
@@ -100,16 +97,13 @@ export default function habitRow({ habitId }: HabitRowProps) {
               );
             } else if (date.getTime() > currentDate.getTime() + 1) {
               return (
-                <td
-                  key={date.toJSON()}
-                  className="opacity-30 bg-gray-200 h-12 w-12"
-                >
+                <td key={date.toJSON()} className="opacity-30 bg-gray-200 h-12">
                   <button></button>
                 </td>
               );
             } else {
               return (
-                <td key={date.toJSON()} className="bg-gray-100 h-12 w-12">
+                <td key={date.toJSON()} className="bg-gray-100 h-12">
                   <button
                     onClick={() => addEntry(date)}
                     className="w-full h-full"

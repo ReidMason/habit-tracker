@@ -8,7 +8,6 @@ export type Habit = {
 };
 
 export async function getHabits(userId: number): Promise<Habit[]> {
-  console.log("getHabits called");
   const result = await fetch(`${baseUrl}/user/${userId}/habit`);
   const data = await result.json();
 
@@ -19,7 +18,6 @@ export async function createHabit(
   userId: number,
   name: string,
 ): Promise<Habit> {
-  console.log("createHabit called");
   try {
     const result = await fetch(`${baseUrl}/user/${userId}/habit`, {
       method: "POST",
@@ -37,7 +35,6 @@ export async function createHabit(
 }
 
 export async function deleteHabit(habitId: number) {
-  console.log("deleteHabit called");
   try {
     await fetch(`${baseUrl}/habit/${habitId}`, {
       method: "DELETE",
@@ -73,7 +70,6 @@ export async function getHabit(habitId: number): Promise<DetailedHabit> {
 }
 
 export async function createHabitEntry(habitId: number, date: Date) {
-  console.log(date);
   try {
     await fetch(`${baseUrl}/habitEntry`, {
       method: "POST",
