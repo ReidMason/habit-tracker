@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/ReidMason/habit-tracker/internal/storage"
 	"github.com/charmbracelet/log"
@@ -166,12 +165,6 @@ func run(w io.Writer, args cmdArgs) error {
 			logger.Error("Date is required", slog.Any("error", err))
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "Date is required")
-			return
-		}
-		if habitEntry.Date.After(time.Now()) {
-			logger.Error("Date cannot be in the future", slog.Any("error", err))
-			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "Date cannot be in the future")
 			return
 		}
 		if habitEntry.HabitId == 0 {
