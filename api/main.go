@@ -18,7 +18,7 @@ type cmdArgs struct {
 	listenAddr string
 }
 
-const dbLocation = "data/data.db"
+const dbLocation = "./data/data.db"
 
 func run(w io.Writer, args cmdArgs) error {
 	handler := log.New(w)

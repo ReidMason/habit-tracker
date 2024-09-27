@@ -1,0 +1,15 @@
+FROM golang:latest AS builder
+
+WORKDIR /app
+
+COPY . .
+
+RUN go build -o ./habit-tracker
+
+FROM golang:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/habit-tracker ./habit-tracker
+
+ENTRYPOINT ["./habit-tracker"]
