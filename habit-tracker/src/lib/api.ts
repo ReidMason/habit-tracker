@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-const baseUrl = "http://localhost:8000/api";
+const baseUrl = process.env.API_URL;
 
 const habitSchema = z.object({
   id: z.number(),
