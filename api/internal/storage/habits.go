@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"time"
 
 	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
 	"golang.org/x/text/cases"
@@ -14,9 +15,14 @@ type Habit struct {
 }
 
 type DetailedHabit struct {
-	Name    string       `json:"name"`
-	Entries []HabitEntry `json:"entries"`
-	Id      int64        `json:"id"`
+	Name    string            `json:"name"`
+	Entries []BasicHabitEntry `json:"entries"`
+	Id      int64             `json:"id"`
+}
+
+type BasicHabitEntry struct {
+	Date time.Time `json:"date"`
+	Id   int64     `json:"id"`
 }
 
 func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
@@ -50,10 +56,18 @@ func (s Sqlite) GetHabit(id int64) (DetailedHabit, error) {
 		return DetailedHabit{}, err
 	}
 
+	basicEntries := make([]BasicHabitEntry, len(entries))
+	for j, entry := range entries {
+		basicEntries[j] = BasicHabitEntry{
+			Date: entry.Date,
+			Id:   entry.Id,
+		}
+	}
+
 	return DetailedHabit{
 		Id:      habit.ID,
 		Name:    habit.Name,
-		Entries: entries,
+		Entries: basicEntries,
 	}, nil
 }
 
@@ -70,7 +84,7 @@ func (s Sqlite) DeleteHabit(id int64) (Habit, error) {
 	}, nil
 }
 
-func (s Sqlite) CreateHabit(userId int64, name string) (Habit, error) {
+func (s Sqlite) CreateHabit(userId int64, name string) (DetailedHabit, error) {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
 	habit, err := s.queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
@@ -79,11 +93,12 @@ func (s Sqlite) CreateHabit(userId int64, name string) (Habit, error) {
 	})
 
 	if err != nil {
-		return Habit{}, err
+		return DetailedHabit{}, err
 	}
 
-	return Habit{
-		Id:   habit.ID,
-		Name: habit.Name,
+	return DetailedHabit{
+		Id:      habit.ID,
+		Name:    habit.Name,
+		Entries: make([]BasicHabitEntry, 0),
 	}, nil
 }

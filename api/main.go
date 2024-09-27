@@ -96,10 +96,34 @@ func run(w io.Writer, args cmdArgs) error {
 			return
 		}
 
+		detailedHabits := make([]storage.DetailedHabit, len(habits))
+		for i, habit := range habits {
+			entries, err := db.GetHabitEntries(habit.Id)
+			if err != nil {
+				logger.Error("Failed to get habit entries", slog.Any("error", err))
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			basicEntries := make([]storage.BasicHabitEntry, len(entries))
+			for j, entry := range entries {
+				basicEntries[j] = storage.BasicHabitEntry{
+					Date: entry.Date,
+					Id:   entry.Id,
+				}
+			}
+
+			detailedHabits[i] = storage.DetailedHabit{
+				Id:      habit.Id,
+				Name:    habit.Name,
+				Entries: basicEntries,
+			}
+		}
+
 		logger.Debug("Got habits", slog.Any("habits", habits))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(habits)
+		json.NewEncoder(w).Encode(detailedHabits)
 	})
 
 	mux.HandleFunc("POST /api/user/{userId}/habit", func(w http.ResponseWriter, r *http.Request) {
