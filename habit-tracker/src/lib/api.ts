@@ -1,15 +1,26 @@
 "use server";
 
+import { z } from "zod";
+
 const baseUrl = "http://localhost:8000/api";
 
-export type Habit = {
-  id: number;
-  name: string;
-};
+const habitSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  entries: z.array(
+    z.object({
+      id: z.number(),
+      date: z.string(),
+    }),
+  ),
+});
+
+export type Habit = z.infer<typeof habitSchema>;
 
 export async function getHabits(userId: number): Promise<Habit[]> {
   const result = await fetch(`${baseUrl}/user/${userId}/habit`);
-  const data = await result.json();
+  const response = await result.json();
+  const data = z.array(habitSchema).parse(response);
 
   return data;
 }
@@ -30,7 +41,8 @@ export async function createHabit(
 
     return data;
   } catch (error) {
-    return { id: -1, name: "" };
+    console.error(error);
+    return { id: -1, name: "", entries: [] };
   }
 }
 
@@ -44,27 +56,11 @@ export async function deleteHabit(habitId: number) {
   }
 }
 
-export type DetailedHabit = {
-  id: number;
-  name: string;
-  entries: HabitEntry[];
-};
-
-export type HabitEntry = {
-  id: number;
-  date: Date;
-};
-
-export async function getHabit(habitId: number): Promise<DetailedHabit> {
+export async function getHabit(habitId: number): Promise<Habit> {
   const result = await fetch(`${baseUrl}/habit/${habitId}`);
-  const data = await result.json();
+  const response = await result.json();
 
-  data.entries = data.entries.map((entry: any) => {
-    return {
-      id: entry.id,
-      date: new Date(entry.date),
-    };
-  });
+  const data = habitSchema.parse(response);
 
   return data;
 }

@@ -1,17 +1,25 @@
-import React from "react";
-import HabitRow from "./habitRow";
+import React, { useState } from "react";
+import HabitRow from "./HabitRow";
 import { Button } from "./ui/button";
+import AddHabitDialog from "./AddHabitDialog";
+import { Habit } from "@/lib/api";
 
 interface TrackerProps {
-  habitIds: number[];
+  userId: number;
+  habits: Habit[];
+  refreshHabits: (habitId: number) => void;
 }
 
 const dateMatch = (date: Date, date2: Date) => {
   return date.toDateString() === date2.toDateString();
 };
 
-export default function tracker({ habitIds }: TrackerProps) {
-  const [pivotDate, setPivotDate] = React.useState(new Date());
+export default function Tracker({
+  habits,
+  userId,
+  refreshHabits,
+}: TrackerProps) {
+  const [pivotDate, setPivotDate] = useState(new Date());
 
   const getDaysInMonth = (year: number, month: number) => {
     const date = new Date(year, month, 1);
@@ -84,13 +92,24 @@ export default function tracker({ habitIds }: TrackerProps) {
           </thead>
 
           <tbody>
-            {habitIds.map((habitId) => (
+            {habits.map((habit) => (
               <HabitRow
-                habitId={habitId}
-                key={habitId}
+                habit={habit}
+                key={habit.id}
                 selectedDate={pivotDate}
+                refreshHabits={refreshHabits}
               />
             ))}
+            <tr>
+              <td>
+                <AddHabitDialog
+                  newHabitAdded={async (newHabit: Habit) => {
+                    refreshHabits(newHabit.id);
+                  }}
+                  userId={userId}
+                />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
