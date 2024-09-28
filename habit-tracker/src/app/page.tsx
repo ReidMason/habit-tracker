@@ -1,5 +1,6 @@
 "use client";
 
+import { ModeToggle } from "@/components/ModeToggle";
 import Tracker from "@/components/Tracker";
 import { getHabits, type Habit } from "@/lib/api";
 import { useEffect, useState } from "react";
@@ -20,6 +21,9 @@ export default function Home() {
 
   return (
     <div>
+      <div className="flex justify-end p-4">
+        <ModeToggle />
+      </div>
       <main className="flex justify-center mt-8">
         <div className="inline-flex flex-col border p-4 rounded-xl">
           <Tracker
