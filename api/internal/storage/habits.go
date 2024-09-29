@@ -17,8 +17,9 @@ type Habit struct {
 }
 
 type BasicHabitEntry struct {
-	Date time.Time `json:"date"`
-	Id   int64     `json:"id"`
+	Date  time.Time `json:"date"`
+	Combo int       `json:"combo"`
+	Id    int64     `json:"id"`
 }
 
 func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
@@ -37,10 +38,21 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 		}
 
 		BasicHabitEntries := make([]BasicHabitEntry, len(entries))
+		combo := 0
+		var tomorrow time.Time
 		for j, entry := range entries {
+			if combo > 0 && entry.Date == tomorrow {
+				combo++
+			} else {
+				combo = 1
+			}
+
+			tomorrow = entry.Date.AddDate(0, 0, 1)
+
 			BasicHabitEntries[j] = BasicHabitEntry{
-				Date: entry.Date,
-				Id:   entry.Id,
+				Date:  entry.Date,
+				Id:    entry.Id,
+				Combo: combo,
 			}
 		}
 

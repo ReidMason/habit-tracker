@@ -18,6 +18,8 @@ const dateMatch = (date: Date, date2: Date): boolean => {
   return date.toDateString() === date2.toDateString();
 };
 
+const fullCombo = 10;
+
 export default function HabitRow({
   habit,
   selectedDate,
@@ -91,7 +93,10 @@ export default function HabitRow({
             <td
               key={date.toJSON()}
               className="h-12"
-              style={{ backgroundColor: habit.colour }}
+              style={{
+                backgroundColor: habit.colour,
+                opacity: Math.min(entry.combo, fullCombo) / fullCombo,
+              }}
             >
               <button
                 onClick={() => removeEntry(entry.id)}

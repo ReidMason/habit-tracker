@@ -12,6 +12,7 @@ const habitSchema = z.object({
     z.object({
       id: z.number(),
       date: z.string(),
+      combo: z.number(),
     }),
   ),
 });
