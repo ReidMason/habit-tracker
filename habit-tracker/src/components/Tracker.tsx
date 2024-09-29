@@ -83,7 +83,7 @@ export default function Tracker({
               {daysInMonth.map((date) => (
                 <th
                   key={date.toJSON()}
-                  className={`${dateMatch(date, new Date()) ? "bg-secondary ring" : ""} min-h-12 min-w-12 border`}
+                  className={`${dateMatch(date, new Date()) ? "bg-secondary ring" : ""} min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
                 >
                   {date.getDate()}
                 </th>
