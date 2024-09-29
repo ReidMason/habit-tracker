@@ -37,35 +37,10 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detailedHabits := make([]storage.Habit, len(habits))
-	for i, habit := range habits {
-		entries, err := h.db.GetHabitEntries(habit.Id)
-		if err != nil {
-			h.logger.Error("Failed to get habit entries", slog.Any("error", err))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		basicEntries := make([]storage.BasicHabitEntry, len(entries))
-		for j, entry := range entries {
-			basicEntries[j] = storage.BasicHabitEntry{
-				Date: entry.Date,
-				Id:   entry.Id,
-			}
-		}
-
-		detailedHabits[i] = storage.Habit{
-			Id:      habit.Id,
-			Name:    habit.Name,
-			Entries: basicEntries,
-			Colour:  habit.Colour,
-		}
-	}
-
 	h.logger.Debug("Got habits", slog.Any("habits", habits))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(detailedHabits)
+	json.NewEncoder(w).Encode(habits)
 }
 
 func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
