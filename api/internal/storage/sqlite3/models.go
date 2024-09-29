@@ -15,6 +15,7 @@ type Habit struct {
 	Description sql.NullString
 	CreatedAt   string
 	UpdatedAt   string
+	Colour      string
 }
 
 type HabitEntry struct {

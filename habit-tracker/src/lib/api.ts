@@ -7,6 +7,7 @@ const baseUrl = process.env.API_URL;
 const habitSchema = z.object({
   id: z.number(),
   name: z.string(),
+  colour: z.string(),
   entries: z.array(
     z.object({
       id: z.number(),

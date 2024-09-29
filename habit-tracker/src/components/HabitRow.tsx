@@ -51,15 +51,6 @@ export default function HabitRow({
     refreshHabits(habit.id);
   };
 
-  const successColours = [
-    "bg-green-500",
-    "bg-orange-400",
-    "bg-purple-300",
-    "bg-blue-200",
-  ];
-
-  const successColour = successColours[habit.id % successColours.length];
-
   return (
     <tr>
       <td className="min-w-32 flex items-center">
@@ -71,7 +62,11 @@ export default function HabitRow({
 
         if (entry !== undefined) {
           return (
-            <td key={date.toJSON()} className={`${successColour} h-12`}>
+            <td
+              key={date.toJSON()}
+              className="h-12"
+              style={{ backgroundColor: habit.colour }}
+            >
               <button
                 onClick={() => removeEntry(entry.id)}
                 className="w-full h-full"

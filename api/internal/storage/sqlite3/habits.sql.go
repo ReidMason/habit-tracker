@@ -11,18 +11,24 @@ import (
 )
 
 const createHabit = `-- name: CreateHabit :one
-INSERT INTO habits (user_id, name, description) VALUES (?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at
+INSERT INTO habits (user_id, name, description, colour) VALUES (?, ?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at, colour
 `
 
 type CreateHabitParams struct {
 	UserID      int64
 	Name        string
 	Description sql.NullString
+	Colour      string
 }
 
 // Create a new habit
 func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit, error) {
-	row := q.db.QueryRowContext(ctx, createHabit, arg.UserID, arg.Name, arg.Description)
+	row := q.db.QueryRowContext(ctx, createHabit,
+		arg.UserID,
+		arg.Name,
+		arg.Description,
+		arg.Colour,
+	)
 	var i Habit
 	err := row.Scan(
 		&i.ID,
@@ -31,12 +37,13 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Colour,
 	)
 	return i, err
 }
 
 const deleteHabit = `-- name: DeleteHabit :one
-DELETE FROM habits WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at
+DELETE FROM habits WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour
 `
 
 // Delete a habit by ID
@@ -50,12 +57,13 @@ func (q *Queries) DeleteHabit(ctx context.Context, id int64) (Habit, error) {
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Colour,
 	)
 	return i, err
 }
 
 const getHabit = `-- name: GetHabit :one
-SELECT id, user_id, name, description, created_at, updated_at FROM habits WHERE id = ?
+SELECT id, user_id, name, description, created_at, updated_at, colour FROM habits WHERE id = ?
 `
 
 // Retrieve a habit by ID
@@ -69,12 +77,13 @@ func (q *Queries) GetHabit(ctx context.Context, id int64) (Habit, error) {
 		&i.Description,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Colour,
 	)
 	return i, err
 }
 
 const getHabits = `-- name: GetHabits :many
-SELECT id, user_id, name, description, created_at, updated_at FROM habits WHERE user_id = ?
+SELECT id, user_id, name, description, created_at, updated_at, colour FROM habits WHERE user_id = ?
 `
 
 // Retrieve all habits for a user
@@ -94,6 +103,7 @@ func (q *Queries) GetHabits(ctx context.Context, userID int64) ([]Habit, error) 
 			&i.Description,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Colour,
 		); err != nil {
 			return nil, err
 		}

@@ -10,12 +10,14 @@ import (
 )
 
 type Habit struct {
-	Name string `json:"name"`
-	Id   int64  `json:"id"`
+	Colour string `json:"colour"`
+	Name   string `json:"name"`
+	Id     int64  `json:"id"`
 }
 
 type DetailedHabit struct {
 	Name    string            `json:"name"`
+	Colour  string            `json:"colour"`
 	Entries []BasicHabitEntry `json:"entries"`
 	Id      int64             `json:"id"`
 }
@@ -36,8 +38,9 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 
 	for i, u := range user {
 		habits[i] = Habit{
-			Id:   u.ID,
-			Name: u.Name,
+			Id:     u.ID,
+			Name:   u.Name,
+			Colour: u.Colour,
 		}
 	}
 
@@ -68,6 +71,7 @@ func (s Sqlite) GetHabit(id int64) (DetailedHabit, error) {
 		Id:      habit.ID,
 		Name:    habit.Name,
 		Entries: basicEntries,
+		Colour:  habit.Colour,
 	}, nil
 }
 
@@ -79,17 +83,19 @@ func (s Sqlite) DeleteHabit(id int64) (Habit, error) {
 	}
 
 	return Habit{
-		Id:   habit.ID,
-		Name: habit.Name,
+		Id:     habit.ID,
+		Name:   habit.Name,
+		Colour: habit.Colour,
 	}, nil
 }
 
-func (s Sqlite) CreateHabit(userId int64, name string) (DetailedHabit, error) {
+func (s Sqlite) CreateHabit(userId int64, name string, colour string) (DetailedHabit, error) {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
 	habit, err := s.queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
 		UserID: userId,
 		Name:   caser.String(name),
+		Colour: colour,
 	})
 
 	if err != nil {
@@ -100,5 +106,6 @@ func (s Sqlite) CreateHabit(userId int64, name string) (DetailedHabit, error) {
 		Id:      habit.ID,
 		Name:    habit.Name,
 		Entries: make([]BasicHabitEntry, 0),
+		Colour:  habit.Colour,
 	}, nil
 }

@@ -4,7 +4,7 @@ SELECT * FROM habits WHERE user_id = ?;
 
 -- name: CreateHabit :one
 -- Create a new habit
-INSERT INTO habits (user_id, name, description) VALUES (?, ?, ?) RETURNING *;
+INSERT INTO habits (user_id, name, description, colour) VALUES (?, ?, ?, ?) RETURNING *;
 
 -- name: GetHabit :one
 -- Retrieve a habit by ID

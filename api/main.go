@@ -117,6 +117,7 @@ func run(w io.Writer, args cmdArgs) error {
 				Id:      habit.Id,
 				Name:    habit.Name,
 				Entries: basicEntries,
+				Colour:  habit.Colour,
 			}
 		}
 
@@ -142,7 +143,7 @@ func run(w io.Writer, args cmdArgs) error {
 			return
 		}
 
-		createdHabit, err := db.CreateHabit(userId, habit.Name)
+		createdHabit, err := db.CreateHabit(userId, habit.Name, habit.Colour)
 		if err != nil {
 			logger.Error("Failed to create habit", slog.Any("error", err))
 			w.WriteHeader(http.StatusInternalServerError)
