@@ -13,3 +13,7 @@ SELECT * FROM habits WHERE id = ?;
 -- name: DeleteHabit :one
 -- Delete a habit by ID
 DELETE FROM habits WHERE id = ? RETURNING *;
+
+-- name: UpdateHabit :one
+-- Update a habit by ID
+UPDATE habits SET name = ?, description = ?, colour = ? WHERE id = ? RETURNING *;

@@ -49,6 +49,7 @@ func run(w io.Writer, args cmdArgs) error {
 	mux.HandleFunc("GET /api/user/{userId}/habit", habitController.GetHabits)
 	mux.HandleFunc("POST /api/user/{userId}/habit", habitController.CreateHabit)
 	mux.HandleFunc("DELETE /api/habit/{habitId}", habitController.DeleteHabit)
+	mux.HandleFunc("PUT /api/habit/{habitId}", habitController.EditHabit)
 
 	controllers.AddUserRoutes(mux, db, logger)
 	controllers.AddHabitEntryRoutes(mux, db, logger)

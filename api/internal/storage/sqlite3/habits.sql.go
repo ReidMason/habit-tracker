@@ -117,3 +117,35 @@ func (q *Queries) GetHabits(ctx context.Context, userID int64) ([]Habit, error) 
 	}
 	return items, nil
 }
+
+const updateHabit = `-- name: UpdateHabit :one
+UPDATE habits SET name = ?, description = ?, colour = ? WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour
+`
+
+type UpdateHabitParams struct {
+	Name        string
+	Description sql.NullString
+	Colour      string
+	ID          int64
+}
+
+// Update a habit by ID
+func (q *Queries) UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habit, error) {
+	row := q.db.QueryRowContext(ctx, updateHabit,
+		arg.Name,
+		arg.Description,
+		arg.Colour,
+		arg.ID,
+	)
+	var i Habit
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Colour,
+	)
+	return i, err
+}
