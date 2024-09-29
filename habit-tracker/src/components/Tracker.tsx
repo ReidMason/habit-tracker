@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import HabitRow from "./HabitRow";
 import { Button } from "./ui/button";
-import AddHabitDialog from "./AddHabitDialog";
-import { Habit } from "@/lib/api";
+import HabitDialog from "./HabitDialog";
+import { createHabit, Habit } from "@/lib/api";
+import { PlusIcon } from "@radix-ui/react-icons";
 
 interface TrackerProps {
   userId: number;
   habits: Habit[];
-  refreshHabits: (habitId: number) => void;
+  refreshHabits: (habitId: number) => Promise<void>;
 }
 
 const dateMatch = (date: Date, date2: Date) => {
@@ -102,12 +103,26 @@ export default function Tracker({
             ))}
             <tr>
               <td>
-                <AddHabitDialog
-                  newHabitAdded={async (newHabit: Habit) => {
-                    refreshHabits(newHabit.id);
+                <HabitDialog
+                  title="Add habit"
+                  description="Add a new habit to track"
+                  confirmText="Add habit"
+                  habit={{
+                    id: 0,
+                    name: "",
+                    colour: "#000000",
+                    entries: [],
                   }}
-                  userId={userId}
-                />
+                  submit={async (newHabit: Habit) => {
+                    await createHabit(userId, newHabit);
+                    await refreshHabits(newHabit.id);
+                  }}
+                >
+                  <Button variant="outline" className="flex gap-1">
+                    <PlusIcon />
+                    Add habit
+                  </Button>
+                </HabitDialog>
               </td>
             </tr>
           </tbody>

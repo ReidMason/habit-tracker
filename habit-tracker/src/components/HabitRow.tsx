@@ -1,11 +1,17 @@
-import { createHabitEntry, deleteHabitEntry, type Habit } from "@/lib/api";
+import {
+  createHabitEntry,
+  deleteHabitEntry,
+  updateHabit,
+  type Habit,
+} from "@/lib/api";
 import React from "react";
 import HabitDropdown from "./HabitDropdown";
+import HabitDialog from "./HabitDialog";
 
 interface HabitRowProps {
   habit: Habit;
   selectedDate: Date;
-  refreshHabits: (habitId: number) => void;
+  refreshHabits: (habitId: number) => Promise<void>;
 }
 
 const dateMatch = (date: Date, date2: Date): boolean => {
@@ -17,6 +23,8 @@ export default function HabitRow({
   selectedDate,
   refreshHabits,
 }: HabitRowProps) {
+  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+
   const currentDate = new Date();
 
   const getDaysInMonth = () => {
@@ -51,10 +59,28 @@ export default function HabitRow({
     refreshHabits(habit.id);
   };
 
+  const editHabit = async (newHabit: Habit) => {
+    await updateHabit(newHabit);
+    await refreshHabits(habit.id);
+  };
+
   return (
     <tr>
       <td className="min-w-32 flex items-center">
-        <HabitDropdown habitId={habit.id} refreshHabits={refreshHabits} />
+        <HabitDialog
+          title="Edit Habit"
+          description="Edit the habit details"
+          confirmText="Save"
+          habit={habit}
+          submit={editHabit}
+          open={editDialogOpen}
+          setOpen={setEditDialogOpen}
+        />
+        <HabitDropdown
+          habit={habit}
+          refreshHabits={refreshHabits}
+          editHabit={() => setEditDialogOpen(true)}
+        />
         {habit.name}
       </td>
       {getDaysInMonth().map((date) => {

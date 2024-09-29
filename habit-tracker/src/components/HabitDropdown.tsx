@@ -7,20 +7,22 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { deleteHabit } from "@/lib/api";
+import { deleteHabit, Habit } from "@/lib/api";
 
 interface HabitDropdownProps {
-  habitId: number;
-  refreshHabits: (habitId: number) => void;
+  habit: Habit;
+  refreshHabits: (habitId: number) => Promise<void>;
+  editHabit: () => void;
 }
 
 export default function HabitDropdown({
-  habitId,
+  habit,
   refreshHabits,
+  editHabit,
 }: HabitDropdownProps) {
   const removeHabit = async () => {
-    await deleteHabit(habitId);
-    refreshHabits(habitId);
+    await deleteHabit(habit.id);
+    await refreshHabits(habit.id);
   };
 
   return (
@@ -31,6 +33,7 @@ export default function HabitDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
+        <DropdownMenuItem onClick={editHabit}>Edit</DropdownMenuItem>
         <DropdownMenuItem onClick={removeHabit}>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

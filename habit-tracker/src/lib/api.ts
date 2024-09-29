@@ -71,6 +71,16 @@ export async function getHabit(habitId: number): Promise<Habit> {
   return data;
 }
 
+export async function updateHabit(habit: Habit) {
+  fetch(`${baseUrl}/habit/${habit.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(habit),
+  });
+}
+
 export async function createHabitEntry(habitId: number, date: Date) {
   try {
     await fetch(`${baseUrl}/habitEntry`, {

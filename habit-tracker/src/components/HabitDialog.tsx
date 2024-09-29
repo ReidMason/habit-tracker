@@ -9,27 +9,38 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "./ui/button";
-import { PlusIcon } from "@radix-ui/react-icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createHabit, NewHabit, type Habit } from "@/lib/api";
+import { type Habit } from "@/lib/api";
 import LoadingSpinner from "./LoadingSpinner";
 
-interface AddHabitDialogProps {
-  userId: number;
-  newHabitAdded: (habitId: Habit) => Promise<void>;
+interface HabitDialogProps {
+  habit: Habit;
+  submit: (habit: Habit) => Promise<void>;
+  title: string;
+  description: string;
+  confirmText: string;
+  children?: React.ReactNode;
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
 }
 
-export default function AddHabitDialog({
-  userId,
-  newHabitAdded,
-}: AddHabitDialogProps) {
-  const [newHabit, setNewHabit] = React.useState({
-    name: "",
-    colour: "#000000",
-  } as NewHabit);
+export default function HabitDialog({
+  habit,
+  submit,
+  children,
+  title,
+  description,
+  confirmText,
+  open,
+  setOpen,
+}: HabitDialogProps) {
+  const [newHabit, setNewHabit] = React.useState(structuredClone(habit));
   const [state, setState] = React.useState<"loading" | "idle">("idle");
-  const [open, setOpen] = React.useState(false);
+  const [stateOpen, setStateOpen] = React.useState(open ?? false);
+
+  const updateOpen = setOpen === undefined ? setStateOpen : setOpen;
+  const isOpen = setOpen === undefined ? stateOpen : open;
 
   const setHabitName = (name: string) => {
     setNewHabit((prev) => ({ ...prev, name }));
@@ -43,31 +54,24 @@ export default function AddHabitDialog({
     return newHabit.name.trim().length > 0 && newHabit.colour.trim().length > 0;
   };
 
-  const addHabit = async () => {
+  const confirm = async () => {
     if (!habitValid()) return;
 
     setState("loading");
 
-    const createdHabit = await createHabit(userId, newHabit);
-    await newHabitAdded(createdHabit);
-    setNewHabit({ name: "", colour: "" });
+    await submit(newHabit);
 
     setState("idle");
-    setOpen(false);
+    updateOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={(newValue) => setOpen(newValue)}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="flex gap-1">
-          <PlusIcon />
-          Add habit
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={(newValue) => updateOpen(newValue)}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add habit</DialogTitle>
-          <DialogDescription>Add a new habit to track</DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -101,11 +105,11 @@ export default function AddHabitDialog({
         <DialogFooter>
           <Button
             type="submit"
-            onClick={addHabit}
+            onClick={confirm}
             disabled={state === "loading"}
           >
             {state === "loading" && <LoadingSpinner />}
-            Add habit
+            {confirmText}
           </Button>
         </DialogFooter>
       </DialogContent>
