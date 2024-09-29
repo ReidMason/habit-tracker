@@ -10,120 +10,115 @@ import (
 	"github.com/ReidMason/habit-tracker/internal/storage"
 )
 
-func AddHabitRoutes(mux *http.ServeMux, db *storage.Sqlite, logger logger.Logger) {
-	mux.HandleFunc("GET /api/user/{userId}/habit", func(w http.ResponseWriter, r *http.Request) {
-		userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
-		if err != nil {
-			logger.Error("Failed to parse userId", slog.Any("error", err))
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+type HabitController struct {
+	db     *storage.Sqlite
+	logger logger.Logger
+}
 
-		habits, err := db.GetHabits(userId)
+func NewHabitController(db *storage.Sqlite, logger logger.Logger) *HabitController {
+	return &HabitController{
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (h *HabitController) AddHabitRoutes(mux *http.ServeMux, db *storage.Sqlite, logger logger.Logger) {
+	mux.HandleFunc("GET /api/user/{userId}/habit", h.getHabits)
+	mux.HandleFunc("POST /api/user/{userId}/habit", h.createHabit)
+	mux.HandleFunc("DELETE /api/habit/{habitId}", h.deleteHabit)
+}
+
+func (h *HabitController) getHabits(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse userId", slog.Any("error", err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	habits, err := h.db.GetHabits(userId)
+	if err != nil {
+		h.logger.Error("Failed to get habits", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	detailedHabits := make([]storage.DetailedHabit, len(habits))
+	for i, habit := range habits {
+		entries, err := h.db.GetHabitEntries(habit.Id)
 		if err != nil {
-			logger.Error("Failed to get habits", slog.Any("error", err))
+			h.logger.Error("Failed to get habit entries", slog.Any("error", err))
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
-		detailedHabits := make([]storage.DetailedHabit, len(habits))
-		for i, habit := range habits {
-			entries, err := db.GetHabitEntries(habit.Id)
-			if err != nil {
-				logger.Error("Failed to get habit entries", slog.Any("error", err))
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			basicEntries := make([]storage.BasicHabitEntry, len(entries))
-			for j, entry := range entries {
-				basicEntries[j] = storage.BasicHabitEntry{
-					Date: entry.Date,
-					Id:   entry.Id,
-				}
-			}
-
-			detailedHabits[i] = storage.DetailedHabit{
-				Id:      habit.Id,
-				Name:    habit.Name,
-				Entries: basicEntries,
-				Colour:  habit.Colour,
+		basicEntries := make([]storage.BasicHabitEntry, len(entries))
+		for j, entry := range entries {
+			basicEntries[j] = storage.BasicHabitEntry{
+				Date: entry.Date,
+				Id:   entry.Id,
 			}
 		}
 
-		logger.Debug("Got habits", slog.Any("habits", habits))
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(detailedHabits)
-	})
-
-	mux.HandleFunc("POST /api/user/{userId}/habit", func(w http.ResponseWriter, r *http.Request) {
-		userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
-		if err != nil {
-			logger.Error("Failed to parse userId", slog.Any("error", err))
-			w.WriteHeader(http.StatusBadRequest)
-			return
+		detailedHabits[i] = storage.DetailedHabit{
+			Id:      habit.Id,
+			Name:    habit.Name,
+			Entries: basicEntries,
+			Colour:  habit.Colour,
 		}
+	}
 
-		var habit storage.Habit
-		err = json.NewDecoder(r.Body).Decode(&habit)
-		if err != nil {
-			logger.Error("Failed to decode habit", slog.Any("error", err))
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+	h.logger.Debug("Got habits", slog.Any("habits", habits))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(detailedHabits)
+}
 
-		createdHabit, err := db.CreateHabit(userId, habit.Name, habit.Colour)
-		if err != nil {
-			logger.Error("Failed to create habit", slog.Any("error", err))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+func (h *HabitController) createHabit(w http.ResponseWriter, r *http.Request) {
+	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse userId", slog.Any("error", err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-		logger.Info("Created habit", slog.Any("habit", createdHabit))
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdHabit)
-	})
+	var habit storage.Habit
+	err = json.NewDecoder(r.Body).Decode(&habit)
+	if err != nil {
+		h.logger.Error("Failed to decode habit", slog.Any("error", err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	mux.HandleFunc("DELETE /api/habit/{habitId}", func(w http.ResponseWriter, r *http.Request) {
-		habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
-		if err != nil {
-			logger.Error("Failed to parse habitId", slog.Any("error", err))
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
+	createdHabit, err := h.db.CreateHabit(userId, habit.Name, habit.Colour)
+	if err != nil {
+		h.logger.Error("Failed to create habit", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-		habit, err := db.DeleteHabit(habitId)
-		if err != nil {
-			logger.Error("Failed to delete habit", slog.Any("error", err))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	h.logger.Info("Created habit", slog.Any("habit", createdHabit))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(createdHabit)
+}
 
-		logger.Info("Deleted habit", slog.Int64("habitId", habitId))
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(habit)
-	})
+func (h *HabitController) deleteHabit(w http.ResponseWriter, r *http.Request) {
+	habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
+	if err != nil {
+		h.logger.Error("Failed to parse habitId", slog.Any("error", err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	// mux.HandleFunc("GET /api/habit/{habitId}", func(w http.ResponseWriter, r *http.Request) {
-	// 	habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
-	// 	if err != nil {
-	// 		logger.Error("Failed to parse habitId", slog.Any("error", err))
-	// 		w.WriteHeader(http.StatusBadRequest)
-	// 		return
-	// 	}
-	//
-	// 	habit, err := db.GetHabit(habitId)
-	// 	if err != nil {
-	// 		logger.Error("Failed to get habit", slog.Any("error", err))
-	// 		w.WriteHeader(http.StatusInternalServerError)
-	// 		return
-	// 	}
-	//
-	// 	logger.Debug("Got habit", slog.Any("habit", habit))
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.WriteHeader(http.StatusOK)
-	// 	json.NewEncoder(w).Encode(habit)
-	// })
+	habit, err := h.db.DeleteHabit(habitId)
+	if err != nil {
+		h.logger.Error("Failed to delete habit", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	h.logger.Info("Deleted habit", slog.Int64("habitId", habitId))
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(habit)
 }

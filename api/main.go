@@ -46,7 +46,7 @@ func run(w io.Writer, args cmdArgs) error {
 	mux := http.NewServeMux()
 
 	controllers.AddUserRoutes(mux, db, logger)
-	controllers.AddHabitRoutes(mux, db, logger)
+	controllers.NewHabitController(db, logger).AddHabitRoutes(mux, db, logger)
 	controllers.AddHabitEntryRoutes(mux, db, logger)
 
 	if err := http.ListenAndServe(args.listenAddr, mux); err != nil {
