@@ -26,9 +26,14 @@ export async function getHabits(userId: number): Promise<Habit[]> {
   return data;
 }
 
+export interface NewHabit {
+  name: string;
+  colour: string;
+}
+
 export async function createHabit(
   userId: number,
-  name: string,
+  newHabit: NewHabit,
 ): Promise<Habit> {
   try {
     const result = await fetch(`${baseUrl}/user/${userId}/habit`, {
@@ -36,14 +41,14 @@ export async function createHabit(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(newHabit),
     });
     const data = await result.json();
 
     return data;
   } catch (error) {
     console.error(error);
-    return { id: -1, name: "", entries: [] };
+    return { id: -1, name: "", entries: [], colour: "" };
   }
 }
 
