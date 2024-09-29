@@ -37,7 +37,7 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	detailedHabits := make([]storage.DetailedHabit, len(habits))
+	detailedHabits := make([]storage.Habit, len(habits))
 	for i, habit := range habits {
 		entries, err := h.db.GetHabitEntries(habit.Id)
 		if err != nil {
@@ -54,7 +54,7 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		detailedHabits[i] = storage.DetailedHabit{
+		detailedHabits[i] = storage.Habit{
 			Id:      habit.Id,
 			Name:    habit.Name,
 			Entries: basicEntries,
@@ -105,7 +105,7 @@ func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habit, err := h.db.DeleteHabit(habitId)
+	err = h.db.DeleteHabit(habitId)
 	if err != nil {
 		h.logger.Error("Failed to delete habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -114,5 +114,4 @@ func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 
 	h.logger.Info("Deleted habit", slog.Int64("habitId", habitId))
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(habit)
 }
