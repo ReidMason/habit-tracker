@@ -22,13 +22,7 @@ func NewHabitController(db *storage.Sqlite, logger logger.Logger) *HabitControll
 	}
 }
 
-func (h *HabitController) AddHabitRoutes(mux *http.ServeMux, db *storage.Sqlite, logger logger.Logger) {
-	mux.HandleFunc("GET /api/user/{userId}/habit", h.getHabits)
-	mux.HandleFunc("POST /api/user/{userId}/habit", h.createHabit)
-	mux.HandleFunc("DELETE /api/habit/{habitId}", h.deleteHabit)
-}
-
-func (h *HabitController) getHabits(w http.ResponseWriter, r *http.Request) {
+func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		h.logger.Error("Failed to parse userId", slog.Any("error", err))
@@ -74,7 +68,7 @@ func (h *HabitController) getHabits(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(detailedHabits)
 }
 
-func (h *HabitController) createHabit(w http.ResponseWriter, r *http.Request) {
+func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.ParseInt(r.PathValue("userId"), 10, 64)
 	if err != nil {
 		h.logger.Error("Failed to parse userId", slog.Any("error", err))
@@ -103,7 +97,7 @@ func (h *HabitController) createHabit(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdHabit)
 }
 
-func (h *HabitController) deleteHabit(w http.ResponseWriter, r *http.Request) {
+func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 	habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
 	if err != nil {
 		h.logger.Error("Failed to parse habitId", slog.Any("error", err))

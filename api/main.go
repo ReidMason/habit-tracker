@@ -45,8 +45,12 @@ func run(w io.Writer, args cmdArgs) error {
 
 	mux := http.NewServeMux()
 
+	habitController := controllers.NewHabitController(db, logger)
+	mux.HandleFunc("GET /api/user/{userId}/habit", habitController.GetHabits)
+	mux.HandleFunc("POST /api/user/{userId}/habit", habitController.CreateHabit)
+	mux.HandleFunc("DELETE /api/habit/{habitId}", habitController.DeleteHabit)
+
 	controllers.AddUserRoutes(mux, db, logger)
-	controllers.NewHabitController(db, logger).AddHabitRoutes(mux, db, logger)
 	controllers.AddHabitEntryRoutes(mux, db, logger)
 
 	if err := http.ListenAndServe(args.listenAddr, mux); err != nil {
