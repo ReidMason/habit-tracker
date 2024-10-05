@@ -76,7 +76,7 @@ export default function HabitRow({
 
   return (
     <tr>
-      <td className="min-w-32 flex items-center">
+      <td className="min-w-32 pr-4 flex items-center">
         <HabitDialog
           title="Edit Habit"
           description="Edit the habit details"
