@@ -124,7 +124,7 @@ export default function HabitRow({
           );
         } else if (dateMatch(date, currentDate)) {
           return (
-            <td key={date.toJSON()} className="bg-secondary border h-12">
+            <td key={date.toJSON()} className="bg-secondary/80 border h-12">
               <button
                 onClick={() => addEntry(date)}
                 className="w-full h-full"
