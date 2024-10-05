@@ -60,6 +60,7 @@ export default function HabitDialog({
           <Button
             onClick={() => updateOpen(false)}
             disabled={state === "loading"}
+            variant="secondary"
           >
             {state === "loading" && <LoadingSpinner />}
             Cancel
