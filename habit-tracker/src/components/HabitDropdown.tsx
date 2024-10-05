@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { deleteHabit, Habit } from "@/lib/api";
+import { Habit } from "@/lib/api";
 
 interface HabitDropdownProps {
   habit: Habit;
@@ -17,8 +17,6 @@ interface HabitDropdownProps {
 }
 
 export default function HabitDropdown({
-  habit,
-  refreshHabits,
   removeHabit,
   editHabit,
 }: HabitDropdownProps) {
