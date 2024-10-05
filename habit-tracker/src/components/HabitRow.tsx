@@ -95,7 +95,7 @@ export default function HabitRow({
               className="h-12"
               style={{
                 backgroundColor: habit.colour,
-                opacity: Math.min(entry.combo, fullCombo) / fullCombo,
+                opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
               }}
             >
               <button
