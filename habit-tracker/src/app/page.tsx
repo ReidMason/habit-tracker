@@ -25,7 +25,7 @@ export default function Home() {
         <ModeToggle />
       </div>
       <main className="flex justify-center mt-8">
-        <div className="inline-flex flex-col border p-4 rounded-xl">
+        <div className="w-full inline-flex flex-col border p-4 rounded-xl">
           <Tracker
             habits={habits}
             userId={userId}
