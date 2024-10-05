@@ -13,18 +13,15 @@ interface HabitDropdownProps {
   habit: Habit;
   refreshHabits: (habitId: number) => Promise<void>;
   editHabit: () => void;
+  removeHabit: () => void;
 }
 
 export default function HabitDropdown({
   habit,
   refreshHabits,
+  removeHabit,
   editHabit,
 }: HabitDropdownProps) {
-  const removeHabit = async () => {
-    await deleteHabit(habit.id);
-    await refreshHabits(habit.id);
-  };
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -1,5 +1,6 @@
 import {
   createHabitEntry,
+  deleteHabit,
   deleteHabitEntry,
   updateHabit,
   type Habit,
@@ -7,6 +8,7 @@ import {
 import React from "react";
 import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
+import ConfirmDialog from "./ConfirmDialog";
 
 interface HabitRowProps {
   habit: Habit;
@@ -26,6 +28,7 @@ export default function HabitRow({
   refreshHabits,
 }: HabitRowProps) {
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = React.useState(false);
 
   const currentDate = new Date();
 
@@ -66,6 +69,11 @@ export default function HabitRow({
     await refreshHabits(habit.id);
   };
 
+  const removeHabit = async (habit: Habit) => {
+    await deleteHabit(habit.id);
+    await refreshHabits(habit.id);
+  };
+
   return (
     <tr>
       <td className="min-w-32 flex items-center">
@@ -78,10 +86,20 @@ export default function HabitRow({
           open={editDialogOpen}
           setOpen={setEditDialogOpen}
         />
+        <ConfirmDialog
+          title="Remove Habit"
+          description="Are you sure you want to remove this habit?"
+          confirmText="Remove"
+          habit={habit}
+          submit={removeHabit}
+          open={removeDialogOpen}
+          setOpen={setRemoveDialogOpen}
+        />
         <HabitDropdown
           habit={habit}
           refreshHabits={refreshHabits}
           editHabit={() => setEditDialogOpen(true)}
+          removeHabit={() => setRemoveDialogOpen(true)}
         />
         {habit.name}
       </td>
