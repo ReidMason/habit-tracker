@@ -115,13 +115,14 @@ func (s Sqlite) UpdateHabit(id int64, name string, colour string, index int64) e
 	return err
 }
 
-func (s Sqlite) CreateHabit(userId int64, name string, colour string) (Habit, error) {
+func (s Sqlite) CreateHabit(userId int64, name string, colour string, index int64) (Habit, error) {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
 	habit, err := s.queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
 		UserID: userId,
 		Name:   caser.String(name),
 		Colour: colour,
+		Index:  index,
 	})
 
 	if err != nil {

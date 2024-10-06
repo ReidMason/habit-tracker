@@ -108,7 +108,21 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdHabit, err := h.db.CreateHabit(userId, habit.Name, habit.Colour)
+	habits, err := h.db.GetHabits(userId)
+	if err != nil {
+		h.logger.Error("Failed to get habits", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	var highestIndex int64 = 0
+	for _, h := range habits {
+		if h.Index > highestIndex {
+			highestIndex = h.Index
+		}
+	}
+
+	createdHabit, err := h.db.CreateHabit(userId, habit.Name, habit.Colour, highestIndex+1)
 	if err != nil {
 		h.logger.Error("Failed to create habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)

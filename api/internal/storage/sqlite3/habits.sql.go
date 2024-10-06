@@ -11,7 +11,7 @@ import (
 )
 
 const createHabit = `-- name: CreateHabit :one
-INSERT INTO habits (user_id, name, description, colour) VALUES (?, ?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
+INSERT INTO habits (user_id, name, description, colour, ` + "`" + `index` + "`" + `) VALUES (?, ?, ?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
 `
 
 type CreateHabitParams struct {
@@ -19,6 +19,7 @@ type CreateHabitParams struct {
 	Name        string
 	Description sql.NullString
 	Colour      string
+	Index       int64
 }
 
 // Create a new habit
@@ -28,6 +29,7 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 		arg.Name,
 		arg.Description,
 		arg.Colour,
+		arg.Index,
 	)
 	var i Habit
 	err := row.Scan(
