@@ -11,7 +11,7 @@ import (
 )
 
 const createHabit = `-- name: CreateHabit :one
-INSERT INTO habits (user_id, name, description, colour) VALUES (?, ?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at, colour, 'index'
+INSERT INTO habits (user_id, name, description, colour) VALUES (?, ?, ?, ?) RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
 `
 
 type CreateHabitParams struct {
@@ -44,7 +44,7 @@ func (q *Queries) CreateHabit(ctx context.Context, arg CreateHabitParams) (Habit
 }
 
 const deleteHabit = `-- name: DeleteHabit :one
-DELETE FROM habits WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, 'index'
+DELETE FROM habits WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
 `
 
 // Delete a habit by ID
@@ -65,7 +65,7 @@ func (q *Queries) DeleteHabit(ctx context.Context, id int64) (Habit, error) {
 }
 
 const getHabit = `-- name: GetHabit :one
-SELECT id, user_id, name, description, created_at, updated_at, colour, 'index' FROM habits WHERE id = ?
+SELECT id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + ` FROM habits WHERE id = ?
 `
 
 // Retrieve a habit by ID
@@ -86,7 +86,7 @@ func (q *Queries) GetHabit(ctx context.Context, id int64) (Habit, error) {
 }
 
 const getHabits = `-- name: GetHabits :many
-SELECT id, user_id, name, description, created_at, updated_at, colour, 'index' FROM habits WHERE user_id = ?
+SELECT id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + ` FROM habits WHERE user_id = ?
 `
 
 // Retrieve all habits for a user
@@ -123,7 +123,7 @@ func (q *Queries) GetHabits(ctx context.Context, userID int64) ([]Habit, error) 
 }
 
 const updateHabit = `-- name: UpdateHabit :one
-UPDATE habits SET name = ?, description = ?, colour = ? WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, 'index'
+UPDATE habits SET name = ?, description = ?, colour = ? WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
 `
 
 type UpdateHabitParams struct {
