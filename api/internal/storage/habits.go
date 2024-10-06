@@ -107,10 +107,11 @@ func (s Sqlite) UpdateHabit(id int64, name string, colour string, index int64) e
 	ctx := context.Background()
 	caser := cases.Title(language.English)
 	_, err := s.queries.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
-		ID:     id,
-		Name:   caser.String(name),
-		Colour: colour,
-		Index:  index,
+		ID:        id,
+		Name:      caser.String(name),
+		Colour:    colour,
+		Index:     index,
+		UpdatedAt: time.Now().Format(time.DateTime),
 	})
 	return err
 }
