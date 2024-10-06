@@ -14,13 +14,15 @@ type Habit struct {
 	Colour  string            `json:"colour"`
 	Entries []BasicHabitEntry `json:"entries"`
 	Id      int64             `json:"id"`
+	Index   int64             `json:"index"`
 }
 
-func NewHabit(id int64, name string, colour string, entries []BasicHabitEntry) Habit {
+func NewHabit(id int64, name string, colour string, index int64, entries []BasicHabitEntry) Habit {
 	return Habit{
 		Id:      id,
 		Name:    name,
 		Colour:  colour,
+		Index:   index,
 		Entries: entries,
 	}
 }
@@ -69,7 +71,7 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 			BasicHabitEntries[j] = NewBasicHabitEntry(entry.Date, combo, entry.Id)
 		}
 
-		habits[i] = NewHabit(u.ID, u.Name, u.Colour, BasicHabitEntries)
+		habits[i] = NewHabit(u.ID, u.Name, u.Colour, u.Index, BasicHabitEntries)
 	}
 
 	return habits, nil
@@ -92,7 +94,7 @@ func (s Sqlite) GetHabit(id int64) (Habit, error) {
 		basicEntries[j] = NewBasicHabitEntry(entry.Date, 0, entry.Id)
 	}
 
-	return NewHabit(habit.ID, habit.Name, habit.Colour, basicEntries), nil
+	return NewHabit(habit.ID, habit.Name, habit.Colour, habit.Index, basicEntries), nil
 }
 
 func (s Sqlite) DeleteHabit(id int64) error {
@@ -125,5 +127,5 @@ func (s Sqlite) CreateHabit(userId int64, name string, colour string) (Habit, er
 		return Habit{}, err
 	}
 
-	return NewHabit(habit.ID, habit.Name, habit.Colour, make([]BasicHabitEntry, 0)), nil
+	return NewHabit(habit.ID, habit.Name, habit.Colour, habit.Index, make([]BasicHabitEntry, 0)), nil
 }
