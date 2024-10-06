@@ -16,6 +16,15 @@ type Habit struct {
 	Id      int64             `json:"id"`
 }
 
+func NewHabit(id int64, name string, colour string, entries []BasicHabitEntry) Habit {
+	return Habit{
+		Id:      id,
+		Name:    name,
+		Colour:  colour,
+		Entries: entries,
+	}
+}
+
 type BasicHabitEntry struct {
 	Date  time.Time `json:"date"`
 	Combo int       `json:"combo"`
@@ -56,12 +65,7 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 			}
 		}
 
-		habits[i] = Habit{
-			Id:      u.ID,
-			Name:    u.Name,
-			Colour:  u.Colour,
-			Entries: BasicHabitEntries,
-		}
+		habits[i] = NewHabit(u.ID, u.Name, u.Colour, BasicHabitEntries)
 	}
 
 	return habits, nil
@@ -87,12 +91,7 @@ func (s Sqlite) GetHabit(id int64) (Habit, error) {
 		}
 	}
 
-	return Habit{
-		Id:      habit.ID,
-		Name:    habit.Name,
-		Entries: basicEntries,
-		Colour:  habit.Colour,
-	}, nil
+	return NewHabit(habit.ID, habit.Name, habit.Colour, basicEntries), nil
 }
 
 func (s Sqlite) DeleteHabit(id int64) error {
@@ -125,10 +124,5 @@ func (s Sqlite) CreateHabit(userId int64, name string, colour string) (Habit, er
 		return Habit{}, err
 	}
 
-	return Habit{
-		Id:      habit.ID,
-		Name:    habit.Name,
-		Entries: make([]BasicHabitEntry, 0),
-		Colour:  habit.Colour,
-	}, nil
+	return NewHabit(habit.ID, habit.Name, habit.Colour, make([]BasicHabitEntry, 0)), nil
 }
