@@ -10,11 +10,17 @@ import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
 import ConfirmDialog from "./ConfirmDialog";
 import { DragHandleDots2Icon } from "@radix-ui/react-icons";
+import { DraggableAttributes } from "@dnd-kit/core";
+import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import { cn } from "@/lib/utils";
 
 interface HabitRowProps {
   habit: Habit;
   selectedDate: Date;
   refreshHabits: (habitId: number) => Promise<void>;
+  attributes?: DraggableAttributes;
+  listeners?: SyntheticListenerMap;
+  dragging?: boolean;
 }
 
 const dateMatch = (date: Date, date2: Date): boolean => {
@@ -27,6 +33,9 @@ export default function HabitRow({
   habit,
   selectedDate,
   refreshHabits,
+  attributes,
+  listeners,
+  dragging,
 }: HabitRowProps) {
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = React.useState(false);
@@ -77,7 +86,14 @@ export default function HabitRow({
 
   return (
     <>
-      <td className="min-w-32 pr-4 flex items-center">
+      <td
+        className={cn(
+          "min-w-32 pr-4 flex items-center touch-none",
+          dragging ? "cursor-grabbing" : "cursor-grab",
+        )}
+        {...attributes}
+        {...listeners}
+      >
         <HabitDialog
           title="Edit Habit"
           description="Edit the habit details"
@@ -96,7 +112,6 @@ export default function HabitRow({
           open={removeDialogOpen}
           setOpen={setRemoveDialogOpen}
         />
-        <DragHandleDots2Icon className="w-4 h-4 opacity-50 cursor-grab" />
         <HabitDropdown
           habit={habit}
           refreshHabits={refreshHabits}

@@ -12,6 +12,7 @@ import {
   DragStartEvent,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -44,10 +45,16 @@ export default function Tracker({
   const [activeHabit, setActiveHabit] = useState<Habit | null>(null);
   const [pivotDate, setPivotDate] = useState(new Date());
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
+    useSensor(TouchSensor),
   );
 
   const getDaysInMonth = (year: number, month: number) => {
@@ -82,6 +89,7 @@ export default function Tracker({
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
+    setActiveHabit(null);
     if (!over?.id || active.id === over.id) {
       return;
     }
@@ -89,8 +97,6 @@ export default function Tracker({
     if (active.id !== over.id) {
       swapHabits(active.id.toString(), over.id.toString());
     }
-
-    setActiveHabit(null);
   };
 
   const swapHabits = async (habitId1: string, habitId2: string) => {
@@ -173,13 +179,10 @@ export default function Tracker({
                     className={activeHabit?.id === habit.id ? "opacity-0" : ""}
                     id={habit.id.toString()}
                     key={habit.id.toString()}
-                  >
-                    <HabitRow
-                      habit={habit}
-                      selectedDate={pivotDate}
-                      refreshHabits={refreshHabits}
-                    />
-                  </SortableItem>
+                    habit={habit}
+                    selectedDate={pivotDate}
+                    refreshHabits={refreshHabits}
+                  />
                 ))}
               </SortableContext>
               <tr>
@@ -215,6 +218,7 @@ export default function Tracker({
                 <tbody>
                   <tr className="w-screen">
                     <HabitRow
+                      dragging
                       habit={activeHabit}
                       selectedDate={pivotDate}
                       refreshHabits={refreshHabits}
