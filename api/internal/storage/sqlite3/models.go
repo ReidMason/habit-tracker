@@ -16,6 +16,7 @@ type Habit struct {
 	CreatedAt   string
 	UpdatedAt   string
 	Colour      string
+	Index       int64
 }
 
 type HabitEntry struct {
