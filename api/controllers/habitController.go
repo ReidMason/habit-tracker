@@ -43,6 +43,28 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(habits)
 }
 
+func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
+	var habits []storage.Habit
+	err := json.NewDecoder(r.Body).Decode(&habits)
+	if err != nil {
+		h.logger.Error("Failed to decode habits", slog.Any("error", err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	for _, habit := range habits {
+		err = h.db.UpdateHabit(habit.Id, habit.Name, habit.Colour)
+		if err != nil {
+			h.logger.Error("Failed to edit habit", slog.Any("error", err))
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	h.logger.Info("Edited habits", slog.Any("habits", habits))
+	w.WriteHeader(http.StatusOK)
+}
+
 func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 	habitId, err := strconv.ParseInt(r.PathValue("habitId"), 10, 64)
 	if err != nil {
