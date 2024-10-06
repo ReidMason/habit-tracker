@@ -112,6 +112,7 @@ export default function Tracker({
                     name: "",
                     colour: "#000000",
                     entries: [],
+                    index: 0,
                   }}
                   submit={async (newHabit: Habit) => {
                     await createHabit(userId, newHabit);
