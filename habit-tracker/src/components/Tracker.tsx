@@ -16,7 +16,10 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
@@ -146,7 +149,7 @@ export default function Tracker({
 
       <div className="overflow-x-auto">
         <DndContext
-          modifiers={[restrictToVerticalAxis]}
+          modifiers={[restrictToVerticalAxis, restrictToParentElement]}
           sensors={sensors}
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
