@@ -2,7 +2,7 @@
 
 import { ModeToggle } from "@/components/ModeToggle";
 import Tracker from "@/components/Tracker";
-import { getHabits, type Habit } from "@/lib/api";
+import { getHabits, updateHabits, type Habit } from "@/lib/api";
 import { useEffect, useState } from "react";
 
 const userId = 1;
@@ -13,6 +13,12 @@ export default function Home() {
   const fetchHabits = async () => {
     const response = await getHabits(userId);
     setHabits(response);
+  };
+
+  const updateAllHabits = async (userId: number, habits: Habit[]) => {
+    setHabits(habits);
+    await updateHabits(userId, habits);
+    await fetchHabits();
   };
 
   useEffect(() => {
@@ -28,6 +34,7 @@ export default function Home() {
         <div className="w-full inline-flex flex-col border p-4 rounded-xl">
           <Tracker
             habits={habits}
+            updateHabits={updateAllHabits}
             userId={userId}
             refreshHabits={fetchHabits}
           />

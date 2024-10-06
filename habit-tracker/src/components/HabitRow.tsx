@@ -9,6 +9,7 @@ import React from "react";
 import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
 import ConfirmDialog from "./ConfirmDialog";
+import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 
 interface HabitRowProps {
   habit: Habit;
@@ -75,7 +76,7 @@ export default function HabitRow({
   };
 
   return (
-    <tr>
+    <>
       <td className="min-w-32 pr-4 flex items-center">
         <HabitDialog
           title="Edit Habit"
@@ -95,6 +96,7 @@ export default function HabitRow({
           open={removeDialogOpen}
           setOpen={setRemoveDialogOpen}
         />
+        <DragHandleDots2Icon className="w-4 h-4 opacity-50 cursor-grab" />
         <HabitDropdown
           habit={habit}
           refreshHabits={refreshHabits}
@@ -110,7 +112,7 @@ export default function HabitRow({
           return (
             <td
               key={date.toJSON()}
-              className="h-12"
+              className="h-12 w-12"
               style={{
                 backgroundColor: habit.colour,
                 opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
@@ -124,7 +126,10 @@ export default function HabitRow({
           );
         } else if (dateMatch(date, currentDate)) {
           return (
-            <td key={date.toJSON()} className="bg-secondary/80 border h-12">
+            <td
+              key={date.toJSON()}
+              className="bg-secondary/80 border h-12 w-12"
+            >
               <button
                 onClick={() => addEntry(date)}
                 className="w-full h-full"
@@ -133,13 +138,13 @@ export default function HabitRow({
           );
         } else if (date.getTime() > currentDate.getTime() + 1) {
           return (
-            <td key={date.toJSON()} className="border h-12">
+            <td key={date.toJSON()} className="border h-12 w-12">
               <button></button>
             </td>
           );
         } else {
           return (
-            <td key={date.toJSON()} className="border h-12">
+            <td key={date.toJSON()} className="border h-12 w-12">
               <button
                 onClick={() => addEntry(date)}
                 className="w-full h-full"
@@ -148,6 +153,6 @@ export default function HabitRow({
           );
         }
       })}
-    </tr>
+    </>
   );
 }
