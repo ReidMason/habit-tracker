@@ -123,13 +123,14 @@ func (q *Queries) GetHabits(ctx context.Context, userID int64) ([]Habit, error) 
 }
 
 const updateHabit = `-- name: UpdateHabit :one
-UPDATE habits SET name = ?, description = ?, colour = ? WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
+UPDATE habits SET name = ?, description = ?, colour = ?, ` + "`" + `index` + "`" + ` = ? WHERE id = ? RETURNING id, user_id, name, description, created_at, updated_at, colour, ` + "`" + `index` + "`" + `
 `
 
 type UpdateHabitParams struct {
 	Name        string
 	Description sql.NullString
 	Colour      string
+	Index       int64
 	ID          int64
 }
 
@@ -139,6 +140,7 @@ func (q *Queries) UpdateHabit(ctx context.Context, arg UpdateHabitParams) (Habit
 		arg.Name,
 		arg.Description,
 		arg.Colour,
+		arg.Index,
 		arg.ID,
 	)
 	var i Habit

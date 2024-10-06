@@ -103,13 +103,14 @@ func (s Sqlite) DeleteHabit(id int64) error {
 	return err
 }
 
-func (s Sqlite) UpdateHabit(id int64, name string, colour string) error {
+func (s Sqlite) UpdateHabit(id int64, name string, colour string, index int64) error {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
 	_, err := s.queries.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
 		ID:     id,
 		Name:   caser.String(name),
 		Colour: colour,
+		Index:  index,
 	})
 	return err
 }
