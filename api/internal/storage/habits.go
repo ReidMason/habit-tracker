@@ -31,6 +31,14 @@ type BasicHabitEntry struct {
 	Id    int64     `json:"id"`
 }
 
+func NewBasicHabitEntry(date time.Time, combo int, id int64) BasicHabitEntry {
+	return BasicHabitEntry{
+		Date:  date,
+		Combo: combo,
+		Id:    id,
+	}
+}
+
 func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 	ctx := context.Background()
 	user, err := s.queries.GetHabits(ctx, userId)
@@ -58,11 +66,7 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 
 			tomorrow = entry.Date.AddDate(0, 0, 1)
 
-			BasicHabitEntries[j] = BasicHabitEntry{
-				Date:  entry.Date,
-				Id:    entry.Id,
-				Combo: combo,
-			}
+			BasicHabitEntries[j] = NewBasicHabitEntry(entry.Date, combo, entry.Id)
 		}
 
 		habits[i] = NewHabit(u.ID, u.Name, u.Colour, BasicHabitEntries)
@@ -85,10 +89,7 @@ func (s Sqlite) GetHabit(id int64) (Habit, error) {
 
 	basicEntries := make([]BasicHabitEntry, len(entries))
 	for j, entry := range entries {
-		basicEntries[j] = BasicHabitEntry{
-			Date: entry.Date,
-			Id:   entry.Id,
-		}
+		basicEntries[j] = NewBasicHabitEntry(entry.Date, 0, entry.Id)
 	}
 
 	return NewHabit(habit.ID, habit.Name, habit.Colour, basicEntries), nil
