@@ -43,14 +43,14 @@ func NewBasicHabitEntry(date time.Time, combo int, id int64) BasicHabitEntry {
 
 func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 	ctx := context.Background()
-	user, err := s.queries.GetHabits(ctx, userId)
+	rawHabits, err := s.queries.GetHabits(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	habits := make([]Habit, len(user))
+	habits := make([]Habit, len(rawHabits))
 
-	for i, u := range user {
+	for i, u := range rawHabits {
 		entries, err := s.GetHabitEntries(u.ID)
 		if err != nil {
 			return nil, err
