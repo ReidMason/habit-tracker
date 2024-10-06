@@ -8,6 +8,7 @@ const habitSchema = z.object({
   id: z.number(),
   name: z.string(),
   colour: z.string(),
+  index: z.number(),
   entries: z.array(
     z.object({
       id: z.number(),
@@ -100,6 +101,20 @@ export async function deleteHabitEntry(entryId: number) {
   try {
     await fetch(`${baseUrl}/habitEntry/${entryId}`, {
       method: "DELETE",
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function updateHabits(userId: number, habits: Habit[]) {
+  try {
+    await fetch(`${baseUrl}/user/${userId}/habit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(habits),
     });
   } catch (error) {
     console.error(error);
