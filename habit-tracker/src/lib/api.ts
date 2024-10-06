@@ -50,7 +50,7 @@ export async function createHabit(
     return data;
   } catch (error) {
     console.error(error);
-    return { id: -1, name: "", entries: [], colour: "" };
+    return { id: -1, name: "", entries: [], colour: "", index: 0 };
   }
 }
 

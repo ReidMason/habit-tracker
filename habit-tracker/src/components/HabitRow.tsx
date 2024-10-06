@@ -9,7 +9,6 @@ import React from "react";
 import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
 import ConfirmDialog from "./ConfirmDialog";
-import { DragHandleDots2Icon } from "@radix-ui/react-icons";
 import { DraggableAttributes } from "@dnd-kit/core";
 import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
