@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"sort"
 	"time"
 
 	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
@@ -73,6 +74,10 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 
 		habits[i] = NewHabit(u.ID, u.Name, u.Colour, u.Index, BasicHabitEntries)
 	}
+
+	sort.Slice(habits, func(i, j int) bool {
+		return habits[i].Index < habits[j].Index
+	})
 
 	return habits, nil
 }
