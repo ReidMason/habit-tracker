@@ -88,7 +88,7 @@ export default function HabitRow({
     <>
       <td
         className={cn(
-          "min-w-32 pr-4 flex items-center touch-none transition-all",
+          "min-w-32 pr-4 flex items-center touch-none transition-all h-12",
           dragging ? "cursor-grabbing bg-muted scale-105" : "cursor-grab",
         )}
         {...attributes}
@@ -125,9 +125,10 @@ export default function HabitRow({
 
         if (entry !== undefined) {
           return (
-            <td
+            <TableCell
+              noRing
               key={date.toJSON()}
-              className="h-12 w-12"
+              className="bg-secondary/80"
               style={{
                 backgroundColor: habit.colour,
                 opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
@@ -137,37 +138,48 @@ export default function HabitRow({
                 onClick={() => removeEntry(entry.id)}
                 className="w-full h-full"
               ></button>
-            </td>
+            </TableCell>
           );
         } else if (dateMatch(date, currentDate)) {
           return (
-            <td
-              key={date.toJSON()}
-              className="bg-secondary/80 border h-12 w-12"
-            >
+            <TableCell key={date.toJSON()} className="bg-secondary/80">
               <button
                 onClick={() => addEntry(date)}
                 className="w-full h-full"
               ></button>
-            </td>
+            </TableCell>
           );
         } else if (date.getTime() > currentDate.getTime() + 1) {
-          return (
-            <td key={date.toJSON()} className="border h-12 w-12">
-              <button></button>
-            </td>
-          );
+          return <TableCell key={date.toJSON()} />;
         } else {
           return (
-            <td key={date.toJSON()} className="border h-12 w-12">
+            <TableCell key={date.toJSON()}>
               <button
                 onClick={() => addEntry(date)}
                 className="w-full h-full"
               ></button>
-            </td>
+            </TableCell>
           );
         }
       })}
     </>
+  );
+}
+
+interface TableCellProps {
+  className?: string;
+  style?: React.CSSProperties;
+  children?: React.ReactNode;
+  noRing?: boolean;
+}
+
+function TableCell({ className, children, style, noRing }: TableCellProps) {
+  return (
+    <td className={cn("relative h-12 w-12", className)} style={style}>
+      {!noRing && (
+        <div className="absolute inset-0 ring-1 ring-accent -z-10"></div>
+      )}
+      {children}
+    </td>
   );
 }
