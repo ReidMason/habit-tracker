@@ -87,7 +87,7 @@ export default function HabitRow({
     <>
       <td
         className={cn(
-          "min-w-32 pr-4 flex items-center touch-none h-12",
+          "w-32 pr-4 flex items-center touch-none h-12",
           dragging ? "cursor-grabbing" : "cursor-grab",
         )}
         {...attributes}

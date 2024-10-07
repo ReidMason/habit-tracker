@@ -158,9 +158,7 @@ export default function Tracker({
           <table>
             <thead>
               <tr>
-                <th className="ml-32 text-xl font-semibold mb-2">
-                  {getMonthName()}
-                </th>
+                <th className="text-xl font-semibold mb-2">{getMonthName()}</th>
                 {daysInMonth.map((date) => (
                   <th
                     key={date.toJSON()}
