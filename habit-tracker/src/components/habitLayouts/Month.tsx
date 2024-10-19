@@ -28,12 +28,13 @@ import HabitDialog from "./HabitDialog";
 import { Button } from "../ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import HabitRow from "./HabitRow";
+import type { FetchHabits } from "../types";
 
 const userId = 1;
 
 interface Props {
   habits: Habit[];
-  fetchHabits: (habitId: number) => Promise<void>;
+  fetchHabits: FetchHabits;
   updateHabits: (habits: Habit[]) => Promise<void>;
   pivotDate: Date;
 }
@@ -130,8 +131,9 @@ export default function Month({
                 {daysInMonth.map((date) => (
                   <th
                     key={date.toJSON()}
-                    className={`${datesMatch(date, new Date()) ? "bg-ring/20" : ""
-                      } min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
+                    className={`${
+                      datesMatch(date, new Date()) ? "bg-ring/20" : ""
+                    } min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
                   >
                     {date.getDate()}
                   </th>
@@ -170,7 +172,7 @@ export default function Month({
                     }}
                     submit={async (newHabit: Habit) => {
                       await createHabit(userId, newHabit);
-                      await fetchHabits(newHabit.id);
+                      await fetchHabits();
                     }}
                   >
                     <Button variant="outline" className="flex gap-1 mt-4">

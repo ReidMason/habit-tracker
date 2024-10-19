@@ -12,11 +12,12 @@ import ConfirmDialog from "./ConfirmDialog";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
+import type { FetchHabits } from "../types";
 
 interface HabitRowProps {
   habit: Habit;
   selectedDate: Date;
-  fetchHabits: (habitId: number) => Promise<void>;
+  fetchHabits: FetchHabits;
   attributes?: DraggableAttributes;
   listeners?: SyntheticListenerMap;
   dragging?: boolean;
@@ -65,22 +66,22 @@ export default function HabitRow({
       Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
     );
     await createHabitEntry(habit.id, date);
-    await fetchHabits(habit.id);
+    await fetchHabits();
   };
 
   const removeEntry = async (entryId: number) => {
     await deleteHabitEntry(entryId);
-    await fetchHabits(habit.id);
+    await fetchHabits();
   };
 
   const editHabit = async (newHabit: Habit) => {
     await updateHabit(newHabit);
-    await fetchHabits(habit.id);
+    await fetchHabits();
   };
 
   const removeHabit = async (habit: Habit) => {
     await deleteHabit(habit.id);
-    await fetchHabits(habit.id);
+    await fetchHabits();
   };
 
   return (

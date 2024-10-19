@@ -3,13 +3,14 @@ import { CSS } from "@dnd-kit/utilities";
 import HabitRow from "@/components/habitLayouts/HabitRow";
 import type { Habit } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import type { FetchHabits } from "../types";
 
 interface SortableItemProps {
   className?: string;
   id: string;
   habit: Habit;
   selectedDate: Date;
-  fetchHabits: (habitId: number) => Promise<void>;
+  fetchHabits: FetchHabits;
 }
 
 export function SortableItem({
