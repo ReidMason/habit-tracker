@@ -1,4 +1,3 @@
-import React from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,11 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import { Habit } from "@/lib/api";
+import type { Habit } from "@/lib/api";
 
 interface HabitDropdownProps {
   habit: Habit;
-  refreshHabits: (habitId: number) => Promise<void>;
   editHabit: () => void;
   removeHabit: () => void;
 }

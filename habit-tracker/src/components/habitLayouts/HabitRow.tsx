@@ -9,14 +9,14 @@ import React from "react";
 import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
 import ConfirmDialog from "./ConfirmDialog";
-import { DraggableAttributes } from "@dnd-kit/core";
-import { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
+import type { DraggableAttributes } from "@dnd-kit/core";
+import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
 
 interface HabitRowProps {
   habit: Habit;
   selectedDate: Date;
-  refreshHabits: (habitId: number) => Promise<void>;
+  fetchHabits: (habitId: number) => Promise<void>;
   attributes?: DraggableAttributes;
   listeners?: SyntheticListenerMap;
   dragging?: boolean;
@@ -31,7 +31,7 @@ const fullCombo = 10;
 export default function HabitRow({
   habit,
   selectedDate,
-  refreshHabits,
+  fetchHabits,
   attributes,
   listeners,
   dragging,
@@ -62,25 +62,25 @@ export default function HabitRow({
 
   const addEntry = async (date: Date) => {
     date = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0),
+      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0)
     );
-    createHabitEntry(habit.id, date);
-    refreshHabits(habit.id);
+    await createHabitEntry(habit.id, date);
+    await fetchHabits(habit.id);
   };
 
   const removeEntry = async (entryId: number) => {
-    deleteHabitEntry(entryId);
-    refreshHabits(habit.id);
+    await deleteHabitEntry(entryId);
+    await fetchHabits(habit.id);
   };
 
   const editHabit = async (newHabit: Habit) => {
     await updateHabit(newHabit);
-    await refreshHabits(habit.id);
+    await fetchHabits(habit.id);
   };
 
   const removeHabit = async (habit: Habit) => {
     await deleteHabit(habit.id);
-    await refreshHabits(habit.id);
+    await fetchHabits(habit.id);
   };
 
   return (
@@ -88,7 +88,7 @@ export default function HabitRow({
       <td
         className={cn(
           "w-32 pr-4 flex items-center touch-none h-12",
-          dragging ? "cursor-grabbing" : "cursor-grab",
+          dragging ? "cursor-grabbing" : "cursor-grab"
         )}
         {...attributes}
         {...listeners}
@@ -113,7 +113,6 @@ export default function HabitRow({
         />
         <HabitDropdown
           habit={habit}
-          refreshHabits={refreshHabits}
           editHabit={() => setEditDialogOpen(true)}
           removeHabit={() => setRemoveDialogOpen(true)}
         />

@@ -1,7 +1,6 @@
-import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import HabitRow from "../HabitRow";
+import HabitRow from "@/components/habitLayouts/HabitRow";
 import type { Habit } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -10,7 +9,7 @@ interface SortableItemProps {
   id: string;
   habit: Habit;
   selectedDate: Date;
-  refreshHabits: (habitId: number) => Promise<void>;
+  fetchHabits: (habitId: number) => Promise<void>;
 }
 
 export function SortableItem({
@@ -18,7 +17,7 @@ export function SortableItem({
   id,
   habit,
   selectedDate,
-  refreshHabits,
+  fetchHabits,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -33,7 +32,7 @@ export function SortableItem({
       <HabitRow
         habit={habit}
         selectedDate={selectedDate}
-        refreshHabits={refreshHabits}
+        fetchHabits={fetchHabits}
         attributes={attributes}
         listeners={listeners}
       />

@@ -1,8 +1,6 @@
-"use server";
-
 import { z } from "zod";
 
-const baseUrl = process.env.API_URL;
+const baseUrl = import.meta.env.PUBLIC_API_URL;
 
 const habitSchema = z.object({
   id: z.number(),
@@ -14,7 +12,7 @@ const habitSchema = z.object({
       id: z.number(),
       date: z.string(),
       combo: z.number(),
-    }),
+    })
   ),
 });
 
@@ -35,7 +33,7 @@ export interface NewHabit {
 
 export async function createHabit(
   userId: number,
-  newHabit: NewHabit,
+  newHabit: NewHabit
 ): Promise<Habit> {
   try {
     const result = await fetch(`${baseUrl}/user/${userId}/habit`, {

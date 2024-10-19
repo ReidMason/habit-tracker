@@ -1,52 +1,51 @@
-import React, { useState } from "react";
-import HabitRow from "./HabitRow";
-import { Button } from "./ui/button";
-import HabitDialog from "./HabitDialog";
-import { createHabit, Habit } from "@/lib/api";
-import { PlusIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
+import { createHabit, type Habit } from "../../lib/api";
 import {
   closestCenter,
   DndContext,
-  DragEndEvent,
   DragOverlay,
-  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
-import {
-  restrictToParentElement,
-  restrictToVerticalAxis,
-} from "@dnd-kit/modifiers";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { SortableItem } from "./sortable/SortableItem";
+import {
+  restrictToParentElement,
+  restrictToVerticalAxis,
+} from "@dnd-kit/modifiers";
+import { datesMatch } from "@/lib/utils";
+import { SortableItem } from "../sortable/SortableItem";
+import HabitDialog from "./HabitDialog";
+import { Button } from "../ui/button";
+import { PlusIcon } from "@radix-ui/react-icons";
+import HabitRow from "./HabitRow";
 
-interface TrackerProps {
-  userId: number;
+const userId = 1;
+
+interface Props {
   habits: Habit[];
-  updateHabits: (userId: number, habits: Habit[]) => Promise<void>;
-  refreshHabits: (habitId: number) => Promise<void>;
+  fetchHabits: (habitId: number) => Promise<void>;
+  updateHabits: (habits: Habit[]) => Promise<void>;
+  pivotDate: Date;
 }
 
-const dateMatch = (date: Date, date2: Date) => {
-  return date.toDateString() === date2.toDateString();
-};
-
-export default function Tracker({
+export default function Month({
   habits,
+  fetchHabits,
   updateHabits,
-  userId,
-  refreshHabits,
-}: TrackerProps) {
+  pivotDate,
+}: Props) {
   const [activeHabit, setActiveHabit] = useState<Habit | null>(null);
-  const [pivotDate, setPivotDate] = useState(new Date());
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -57,7 +56,7 @@ export default function Tracker({
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
-    useSensor(TouchSensor),
+    useSensor(TouchSensor)
   );
 
   const getDaysInMonth = (year: number, month: number) => {
@@ -77,17 +76,8 @@ export default function Tracker({
 
   const daysInMonth = getDaysInMonth(
     pivotDate.getFullYear(),
-    pivotDate.getMonth(),
+    pivotDate.getMonth()
   );
-
-  const formatDate = (date: Date) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-    };
-
-    return date.toLocaleDateString("en-gb", options);
-  };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
@@ -112,7 +102,7 @@ export default function Tracker({
       index: index + 1,
     }));
 
-    await updateHabits(userId, newIndexedHabits);
+    await updateHabits(newIndexedHabits);
   };
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -125,28 +115,6 @@ export default function Tracker({
 
   return (
     <>
-      <div className="flex gap-2 items-center mb-4">
-        <Button
-          onClick={() => {
-            const newDate = new Date(pivotDate);
-            newDate.setMonth(newDate.getMonth() - 1);
-            setPivotDate(newDate);
-          }}
-        >
-          Prev
-        </Button>
-        <p className="w-36 text-center">{formatDate(pivotDate)}</p>
-        <Button
-          onClick={() => {
-            const newDate = new Date(pivotDate);
-            newDate.setMonth(newDate.getMonth() + 1);
-            setPivotDate(newDate);
-          }}
-        >
-          Next
-        </Button>
-      </div>
-
       <div className="overflow-x-auto">
         <DndContext
           modifiers={[restrictToVerticalAxis, restrictToParentElement]}
@@ -162,7 +130,8 @@ export default function Tracker({
                 {daysInMonth.map((date) => (
                   <th
                     key={date.toJSON()}
-                    className={`${dateMatch(date, new Date()) ? "bg-ring/20" : ""} min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
+                    className={`${datesMatch(date, new Date()) ? "bg-ring/20" : ""
+                      } min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
                   >
                     {date.getDate()}
                   </th>
@@ -182,7 +151,7 @@ export default function Tracker({
                     key={habit.id.toString()}
                     habit={habit}
                     selectedDate={pivotDate}
-                    refreshHabits={refreshHabits}
+                    fetchHabits={fetchHabits}
                   />
                 ))}
               </SortableContext>
@@ -201,7 +170,7 @@ export default function Tracker({
                     }}
                     submit={async (newHabit: Habit) => {
                       await createHabit(userId, newHabit);
-                      await refreshHabits(newHabit.id);
+                      await fetchHabits(newHabit.id);
                     }}
                   >
                     <Button variant="outline" className="flex gap-1">
@@ -222,7 +191,7 @@ export default function Tracker({
                       dragging
                       habit={activeHabit}
                       selectedDate={pivotDate}
-                      refreshHabits={refreshHabits}
+                      fetchHabits={fetchHabits}
                     />
                   </tr>
                 </tbody>

@@ -1,0 +1,13 @@
+---
+import '@/styles/globals.css';
+import Layout from '../layouts/Layout.astro';
+import ModeToggle from '../components/ModeToggle';
+import HabitWrapper from '../components/HabitWrapper';
+---
+
+<Layout title="Habit tracker">
+<main>
+  <ModeToggle client:load />
+  <HabitWrapper client:load />
+</main>
+</Layout>
