@@ -192,9 +192,12 @@ function TableCell({
           style={style}
         />
       </div>
-      {!noRing && (
-        <div className="absolute inset-0 ring-1 ring-accent -z-10"></div>
-      )}
+      <div
+        className={cn(
+          "absolute inset-0 ring-1 ring-inset ring-accent -z-10 transition-all",
+          noRing ? "ring-0" : ""
+        )}
+      ></div>
       {children}
     </td>
   );
