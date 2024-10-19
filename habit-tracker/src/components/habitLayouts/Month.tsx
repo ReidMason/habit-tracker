@@ -173,7 +173,7 @@ export default function Month({
                       await fetchHabits(newHabit.id);
                     }}
                   >
-                    <Button variant="outline" className="flex gap-1">
+                    <Button variant="outline" className="flex gap-1 mt-4">
                       <PlusIcon />
                       Add habit
                     </Button>
