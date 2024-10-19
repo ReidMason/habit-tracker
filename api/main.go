@@ -11,6 +11,7 @@ import (
 	"github.com/ReidMason/habit-tracker/controllers"
 	"github.com/ReidMason/habit-tracker/internal/storage"
 	"github.com/charmbracelet/log"
+	"github.com/rs/cors"
 )
 
 type cmdArgs struct {
@@ -45,6 +46,8 @@ func run(w io.Writer, args cmdArgs) error {
 
 	mux := http.NewServeMux()
 
+	mux.Handle("/", http.FileServer(http.Dir("./static")))
+
 	habitController := controllers.NewHabitController(db, logger)
 	mux.HandleFunc("GET /api/user/{userId}/habit", habitController.GetHabits)
 	mux.HandleFunc("POST /api/user/{userId}/habit", habitController.CreateHabit)
@@ -52,10 +55,17 @@ func run(w io.Writer, args cmdArgs) error {
 	mux.HandleFunc("DELETE /api/habit/{habitId}", habitController.DeleteHabit)
 	mux.HandleFunc("PUT /api/habit/{habitId}", habitController.EditHabit)
 
-	controllers.AddUserRoutes(mux, db, logger)
-	controllers.AddHabitEntryRoutes(mux, db, logger)
+	habitEntryController := controllers.NewHabitEntryController(db, logger)
+	mux.HandleFunc("POST /api/habitEntry", habitEntryController.CreateHabitEntry)
+	mux.HandleFunc("DELETE /api/habitEntry/{entryId}", habitEntryController.DeleteHabitEntry)
 
-	if err := http.ListenAndServe(args.listenAddr, mux); err != nil {
+	controllers.AddUserRoutes(mux, db, logger)
+
+	app := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:4321"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	}).Handler(mux)
+	if err := http.ListenAndServe(args.listenAddr, app); err != nil {
 		fmt.Println(err)
 	}
 

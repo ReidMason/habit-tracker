@@ -38,9 +38,7 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Debug("Got habits", slog.Any("habits", habits))
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(habits)
+	successWithBody(w, habits)
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +60,7 @@ func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Edited habits", slog.Any("habits", habits))
-	w.WriteHeader(http.StatusOK)
+	success(w)
 }
 
 func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +87,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Edited habit", slog.Int64("habitId", habitId))
-	w.WriteHeader(http.StatusOK)
+	success(w)
 }
 
 func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
@@ -130,9 +128,7 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Created habit", slog.Any("habit", createdHabit))
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdHabit)
+	successWithBody(w, createdHabit)
 }
 
 func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
@@ -151,5 +147,5 @@ func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Deleted habit", slog.Int64("habitId", habitId))
-	w.WriteHeader(http.StatusOK)
+	success(w)
 }

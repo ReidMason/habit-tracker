@@ -19,9 +19,7 @@ func AddUserRoutes(mux *http.ServeMux, db *storage.Sqlite, logger logger.Logger)
 		}
 
 		logger.Debug("Got users", slog.Any("users", users))
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(users)
+		successWithBody(w, users)
 	})
 
 	mux.HandleFunc("POST /api/user", func(w http.ResponseWriter, r *http.Request) {
@@ -41,8 +39,6 @@ func AddUserRoutes(mux *http.ServeMux, db *storage.Sqlite, logger logger.Logger)
 		}
 
 		logger.Info("Created user", slog.Any("user", createdUser))
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(createdUser)
+		successWithBody(w, createdUser)
 	})
 }
