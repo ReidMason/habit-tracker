@@ -126,7 +126,8 @@ export default function HabitRow({
             <TableCell
               noRing
               key={date.toJSON()}
-              className="bg-secondary/80"
+              className=""
+              cellClassName="scale-100"
               style={{
                 backgroundColor: habit.colour,
                 opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
@@ -166,14 +167,30 @@ export default function HabitRow({
 
 interface TableCellProps {
   className?: string;
+  cellClassName?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
   noRing?: boolean;
 }
 
-function TableCell({ className, children, style, noRing }: TableCellProps) {
+function TableCell({
+  className,
+  cellClassName,
+  children,
+  style,
+  noRing,
+}: TableCellProps) {
   return (
-    <td className={cn("relative h-12 w-12", className)} style={style}>
+    <td className={cn("relative h-12 w-12 transition-all", className)}>
+      <div className="absolute flex inset-0 items-center justify-center -z-10 overflow-hidden">
+        <div
+          className={cn(
+            "absolute scale-0 transition-all w-20 h-20 rounded-full duration-500",
+            cellClassName
+          )}
+          style={style}
+        />
+      </div>
       {!noRing && (
         <div className="absolute inset-0 ring-1 ring-accent -z-10"></div>
       )}
