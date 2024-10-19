@@ -7,7 +7,12 @@ import HabitWrapper from '../components/HabitWrapper';
 
 <Layout title="Habit tracker">
 <main>
-  <ModeToggle client:load />
-  <HabitWrapper client:load />
+  <div class="flex justify-end p-4">
+    <ModeToggle client:load />
+  </div>
+  <div class="p-4 inline-flex flex-col gap-2">
+    <h1 class="text-2xl font-bold">Habit tracker</h1>
+    <HabitWrapper client:load />
+  </div>
 </main>
 </Layout>
