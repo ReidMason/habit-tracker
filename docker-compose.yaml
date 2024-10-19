@@ -1,0 +1,7 @@
+services:
+  habit-tracker:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./api/data/:/app/data"

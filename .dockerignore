@@ -1,0 +1,8 @@
+habit-tracker/node_modules
+habit-tracker/dist
+
+api/justfile
+
+dockerfile
+docker-compose.yaml
+
