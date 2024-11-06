@@ -7,7 +7,7 @@ import {
 import React from "react";
 import HabitDropdown from "./HabitDropdown";
 import HabitDialog from "./HabitDialog";
-import ConfirmDialog from "./ConfirmDialog";
+import ConfirmDialog from "@/components/confirmDialog/ConfirmDialog";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";

@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { type Habit } from "@/lib/api";
-import LoadingSpinner from "./LoadingSpinner";
+import LoadingSpinner from "@/components/habitLayouts/LoadingSpinner";
 
 interface HabitDialogProps {
   habit: Habit;
