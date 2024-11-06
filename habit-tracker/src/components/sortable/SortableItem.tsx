@@ -11,6 +11,7 @@ interface SortableItemProps {
   habit: Habit;
   selectedDate: Date;
   fetchHabits: FetchHabits;
+  createHabitEntry: (habitId: number, date: Date) => Promise<void>;
 }
 
 export function SortableItem({
@@ -19,6 +20,7 @@ export function SortableItem({
   habit,
   selectedDate,
   fetchHabits,
+  createHabitEntry,
 }: SortableItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -36,6 +38,7 @@ export function SortableItem({
         fetchHabits={fetchHabits}
         attributes={attributes}
         listeners={listeners}
+        createHabitEntry={createHabitEntry}
       />
     </tr>
   );

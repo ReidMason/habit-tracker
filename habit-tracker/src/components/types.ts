@@ -1,1 +1,3 @@
-export type FetchHabits = (firstLoad?: boolean) => Promise<void>;
+import type { Habit } from "@/lib/api";
+
+export type FetchHabits = () => Promise<Habit[]>;

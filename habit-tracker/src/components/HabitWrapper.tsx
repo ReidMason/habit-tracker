@@ -2,7 +2,7 @@ import { getHabits, updateHabits, type Habit } from "@/lib/api";
 import { useEffect, useState } from "react";
 import Month from "./habitLayouts/Month";
 import MonthSelector from "./habitLayouts/MonthSelector";
-import { datesMatch, triggerConfetti } from "@/lib/utils";
+import type { FetchHabits } from "./types";
 
 const userId = 1;
 
@@ -10,25 +10,10 @@ export default function HabitWrapper() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [pivotDate, setPivotDate] = useState(new Date());
 
-  const fetchHabits = async (firstLoad: boolean = false) => {
+  const fetchHabits: FetchHabits = async () => {
     const response = await getHabits(userId);
     setHabits(response);
-
-    if (!firstLoad) checkCompleteDay(response);
-  };
-
-  const checkCompleteDay = (habits: Habit[]) => {
-    const today = new Date();
-    const completedHabits = habits.filter((habit) => {
-      const entry = habit.entries.find((entry) => {
-        return datesMatch(new Date(entry.date), today);
-      });
-      return entry;
-    });
-
-    if (completedHabits.length === habits.length) {
-      triggerConfetti();
-    }
+    return response;
   };
 
   const updateAllHabits = async (habits: Habit[]) => {
@@ -38,7 +23,7 @@ export default function HabitWrapper() {
   };
 
   useEffect(() => {
-    fetchHabits(true);
+    fetchHabits();
   }, []);
 
   return (

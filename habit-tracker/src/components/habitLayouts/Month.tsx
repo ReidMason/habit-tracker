@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createHabit, type Habit } from "../../lib/api";
+import { createHabit, createHabitEntry, type Habit } from "../../lib/api";
 import {
   closestCenter,
   DndContext,
@@ -22,7 +22,7 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { datesMatch } from "@/lib/utils";
+import { datesMatch, tryTriggerConfetti } from "@/lib/utils";
 import { SortableItem } from "../sortable/SortableItem";
 import HabitDialog from "./HabitDialog";
 import { Button } from "../ui/button";
@@ -114,6 +114,12 @@ export default function Month({
     setActiveHabit(habit);
   };
 
+  const createNewHabitEntry = async (habitId: number, date: Date) => {
+    await createHabitEntry(habitId, date);
+    const newHabits = await fetchHabits();
+    tryTriggerConfetti(newHabits, date);
+  };
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -154,6 +160,7 @@ export default function Month({
                     habit={habit}
                     selectedDate={pivotDate}
                     fetchHabits={fetchHabits}
+                    createHabitEntry={createNewHabitEntry}
                   />
                 ))}
               </SortableContext>
@@ -194,6 +201,7 @@ export default function Month({
                       habit={activeHabit}
                       selectedDate={pivotDate}
                       fetchHabits={fetchHabits}
+                      createHabitEntry={createNewHabitEntry}
                     />
                   </tr>
                 </tbody>

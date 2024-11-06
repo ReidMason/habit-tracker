@@ -1,5 +1,4 @@
 import {
-  createHabitEntry,
   deleteHabit,
   deleteHabitEntry,
   updateHabit,
@@ -21,6 +20,7 @@ interface HabitRowProps {
   attributes?: DraggableAttributes;
   listeners?: SyntheticListenerMap;
   dragging?: boolean;
+  createHabitEntry: (habitId: number, date: Date) => Promise<void>;
 }
 
 const dateMatch = (date: Date, date2: Date): boolean => {
@@ -36,6 +36,7 @@ export default function HabitRow({
   attributes,
   listeners,
   dragging,
+  createHabitEntry,
 }: HabitRowProps) {
   const [editDialogOpen, setEditDialogOpen] = React.useState(false);
   const [removeDialogOpen, setRemoveDialogOpen] = React.useState(false);

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import confetti from "canvas-confetti";
+import type { Habit } from "./api";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -17,6 +18,19 @@ export function formatDate(date: Date) {
 
 export function datesMatch(date: Date, date2: Date) {
   return date.toDateString() === date2.toDateString();
+}
+
+export function tryTriggerConfetti(habits: Habit[], date: Date) {
+  const completedHabits = habits.filter((habit) => {
+    const entry = habit.entries.find((entry) => {
+      return datesMatch(new Date(entry.date), date);
+    });
+    return entry;
+  });
+
+  if (completedHabits.length === habits.length) {
+    triggerConfetti();
+  }
 }
 
 export function triggerConfetti() {
