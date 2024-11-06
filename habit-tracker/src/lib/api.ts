@@ -2,21 +2,22 @@ import { z } from "zod";
 
 const baseUrl = import.meta.env.PUBLIC_API_URL;
 
+const habitEntrySchema = z.object({
+  id: z.number(),
+  date: z.coerce.date(),
+  combo: z.number(),
+});
+
 const habitSchema = z.object({
   id: z.number(),
   name: z.string(),
   colour: z.string(),
   index: z.number(),
-  entries: z.array(
-    z.object({
-      id: z.number(),
-      date: z.string(),
-      combo: z.number(),
-    })
-  ),
+  entries: z.array(habitEntrySchema),
 });
 
 export type Habit = z.infer<typeof habitSchema>;
+export type HabitEntry = z.infer<typeof habitEntrySchema>;
 
 export async function getHabits(userId: number): Promise<Habit[]> {
   const result = await fetch(`${baseUrl}/user/${userId}/habit`);

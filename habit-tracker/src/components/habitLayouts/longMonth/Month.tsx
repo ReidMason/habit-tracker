@@ -22,13 +22,15 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { datesMatch, tryTriggerConfetti } from "@/lib/utils";
+import { tryTriggerConfetti } from "@/lib/utils";
+import { datesMatch } from "@/lib/dates";
 import { SortableItem } from "@/components/sortable/SortableItem";
 import HabitDialog from "@/components/habits/HabitDialog";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import HabitRow from "./HabitRow";
 import type { FetchHabits } from "@/components/types";
+import { getDaysInMonth } from "@/lib/dates";
 
 const userId = 1;
 
@@ -59,16 +61,6 @@ export default function Month({
     }),
     useSensor(TouchSensor)
   );
-
-  const getDaysInMonth = (year: number, month: number) => {
-    const date = new Date(year, month, 1);
-    const days = [];
-    while (date.getMonth() === month) {
-      days.push(new Date(date));
-      date.setDate(date.getDate() + 1);
-    }
-    return days;
-  };
 
   const getMonthName = () => {
     const date = new Date();
