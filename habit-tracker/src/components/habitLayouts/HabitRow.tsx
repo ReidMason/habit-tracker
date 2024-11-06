@@ -5,8 +5,8 @@ import {
   type Habit,
 } from "@/lib/api";
 import React from "react";
-import HabitDropdown from "./HabitDropdown";
-import HabitDialog from "./HabitDialog";
+import HabitDropdown from "@/components/habits/HabitDropdown";
+import HabitDialog from "@/components/habits/HabitDialog";
 import ConfirmDialog from "@/components/confirmDialog/ConfirmDialog";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";

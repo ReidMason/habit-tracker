@@ -24,7 +24,7 @@ import {
 } from "@dnd-kit/modifiers";
 import { datesMatch, tryTriggerConfetti } from "@/lib/utils";
 import { SortableItem } from "../sortable/SortableItem";
-import HabitDialog from "./HabitDialog";
+import HabitDialog from "@/components/habits/HabitDialog";
 import { Button } from "../ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import HabitRow from "./HabitRow";
