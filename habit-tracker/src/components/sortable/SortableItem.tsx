@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import HabitRow from "@/components/habitLayouts/HabitRow";
+import HabitRow from "@/components/habitLayouts/longMonth/HabitRow";
 import type { Habit } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import type { FetchHabits } from "../types";

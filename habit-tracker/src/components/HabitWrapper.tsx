@@ -1,7 +1,7 @@
 import { getHabits, updateHabits, type Habit } from "@/lib/api";
 import { useEffect, useState } from "react";
-import Month from "./habitLayouts/Month";
-import MonthSelector from "./habitLayouts/MonthSelector";
+import Month from "@/components/habitLayouts/longMonth/Month";
+import MonthSelector from "@/components/habitLayouts/longMonth/MonthSelector";
 import type { FetchHabits } from "./types";
 
 const userId = 1;

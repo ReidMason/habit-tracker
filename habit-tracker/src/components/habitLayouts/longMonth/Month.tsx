@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createHabit, createHabitEntry, type Habit } from "../../lib/api";
+import { createHabit, createHabitEntry, type Habit } from "@/lib/api";
 import {
   closestCenter,
   DndContext,
@@ -23,12 +23,12 @@ import {
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
 import { datesMatch, tryTriggerConfetti } from "@/lib/utils";
-import { SortableItem } from "../sortable/SortableItem";
+import { SortableItem } from "@/components/sortable/SortableItem";
 import HabitDialog from "@/components/habits/HabitDialog";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import HabitRow from "./HabitRow";
-import type { FetchHabits } from "../types";
+import type { FetchHabits } from "@/components/types";
 
 const userId = 1;
 

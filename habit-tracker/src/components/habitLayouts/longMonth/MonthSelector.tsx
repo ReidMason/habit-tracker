@@ -1,5 +1,5 @@
 import { formatDate } from "@/lib/utils";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   pivotDate: Date;

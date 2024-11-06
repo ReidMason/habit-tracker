@@ -11,7 +11,7 @@ import ConfirmDialog from "@/components/confirmDialog/ConfirmDialog";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
-import type { FetchHabits } from "../types";
+import type { FetchHabits } from "@/components/types";
 
 interface HabitRowProps {
   habit: Habit;
