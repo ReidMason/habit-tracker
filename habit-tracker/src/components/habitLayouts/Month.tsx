@@ -121,95 +121,93 @@ export default function Month({
   };
 
   return (
-    <>
-      <div className="overflow-x-auto">
-        <DndContext
-          modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-          onDragStart={handleDragStart}
-        >
-          <table>
-            <thead>
-              <tr>
-                <th className="text-xl font-semibold mb-2">{getMonthName()}</th>
-                {daysInMonth.map((date) => (
-                  <th
-                    key={date.toJSON()}
-                    className={`${
-                      datesMatch(date, new Date()) ? "bg-ring/20" : ""
-                    } min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
-                  >
-                    {date.getDate()}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+    <div className="overflow-x-auto">
+      <DndContext
+        modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        onDragStart={handleDragStart}
+      >
+        <table>
+          <thead>
+            <tr>
+              <th className="text-xl font-semibold mb-2">{getMonthName()}</th>
+              {daysInMonth.map((date) => (
+                <th
+                  key={date.toJSON()}
+                  className={`${
+                    datesMatch(date, new Date()) ? "bg-ring/20" : ""
+                  } min-h-12 min-w-12 border bg-secondary text-secondary-foreground`}
+                >
+                  {date.getDate()}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-            <tbody>
-              <SortableContext
-                items={habits.map((habit) => habit.id.toString())}
-                strategy={verticalListSortingStrategy}
-              >
-                {habits.map((habit) => (
-                  <SortableItem
-                    className={activeHabit?.id === habit.id ? "opacity-0" : ""}
-                    id={habit.id.toString()}
-                    key={habit.id.toString()}
-                    habit={habit}
+          <tbody>
+            <SortableContext
+              items={habits.map((habit) => habit.id.toString())}
+              strategy={verticalListSortingStrategy}
+            >
+              {habits.map((habit) => (
+                <SortableItem
+                  className={activeHabit?.id === habit.id ? "opacity-0" : ""}
+                  id={habit.id.toString()}
+                  key={habit.id.toString()}
+                  habit={habit}
+                  selectedDate={pivotDate}
+                  fetchHabits={fetchHabits}
+                  createHabitEntry={createNewHabitEntry}
+                />
+              ))}
+            </SortableContext>
+            <tr>
+              <td>
+                <HabitDialog
+                  title="Add habit"
+                  description="Add a new habit to track"
+                  confirmText="Add habit"
+                  habit={{
+                    id: 0,
+                    name: "",
+                    colour: "#000000",
+                    entries: [],
+                    index: 0,
+                  }}
+                  submit={async (newHabit: Habit) => {
+                    await createHabit(userId, newHabit);
+                    await fetchHabits();
+                  }}
+                >
+                  <Button variant="outline" className="flex gap-1 mt-4">
+                    <PlusIcon />
+                    Add habit
+                  </Button>
+                </HabitDialog>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <DragOverlay>
+          {activeHabit ? (
+            <table>
+              <tbody>
+                <tr className="w-screen">
+                  <HabitRow
+                    dragging
+                    habit={activeHabit}
                     selectedDate={pivotDate}
                     fetchHabits={fetchHabits}
                     createHabitEntry={createNewHabitEntry}
                   />
-                ))}
-              </SortableContext>
-              <tr>
-                <td>
-                  <HabitDialog
-                    title="Add habit"
-                    description="Add a new habit to track"
-                    confirmText="Add habit"
-                    habit={{
-                      id: 0,
-                      name: "",
-                      colour: "#000000",
-                      entries: [],
-                      index: 0,
-                    }}
-                    submit={async (newHabit: Habit) => {
-                      await createHabit(userId, newHabit);
-                      await fetchHabits();
-                    }}
-                  >
-                    <Button variant="outline" className="flex gap-1 mt-4">
-                      <PlusIcon />
-                      Add habit
-                    </Button>
-                  </HabitDialog>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <DragOverlay>
-            {activeHabit ? (
-              <table>
-                <tbody>
-                  <tr className="w-screen">
-                    <HabitRow
-                      dragging
-                      habit={activeHabit}
-                      selectedDate={pivotDate}
-                      fetchHabits={fetchHabits}
-                      createHabitEntry={createNewHabitEntry}
-                    />
-                  </tr>
-                </tbody>
-              </table>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-      </div>
-    </>
+                </tr>
+              </tbody>
+            </table>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }
