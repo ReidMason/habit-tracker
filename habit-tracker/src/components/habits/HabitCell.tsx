@@ -14,6 +14,7 @@ interface HabitCellProps {
   fetchHabits: FetchHabits;
   as?: React.ElementType;
   displayCurrentDayIndicator?: boolean;
+  ring?: boolean;
 }
 
 export default function HabitCell({
@@ -24,6 +25,7 @@ export default function HabitCell({
   fetchHabits,
   as,
   displayCurrentDayIndicator,
+  ring,
 }: HabitCellProps) {
   const Component = as || "div";
 
@@ -55,7 +57,8 @@ export default function HabitCell({
   return (
     <Component className="p-0">
       <TableCell
-        ring={!hasEntry}
+        date={date}
+        ring={ring || !hasEntry}
         cellClassName={hasEntry ? "scale-100" : undefined}
         style={tableCellStyle}
         isToday={isToday}
@@ -73,6 +76,7 @@ export default function HabitCell({
 }
 
 interface TableCellProps {
+  date: Date;
   cellClassName?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
@@ -82,6 +86,7 @@ interface TableCellProps {
 }
 
 function TableCell({
+  date,
   cellClassName,
   children,
   style,
@@ -94,9 +99,17 @@ function TableCell({
       <div
         className={cn(
           "absolute flex inset-0 items-center justify-center -z-10 overflow-hidden",
-          isToday ? "bg-secondary/80" : ""
+          isToday ? "bg-secondary" : ""
         )}
       >
+        {displayCurrentDayIndicator && isToday && (
+          <p
+            className={cn(
+              "absolute top-1 right-2 text-sm z-20 text-neutral-600",
+              isToday ? "rounded-full font-bold" : ""
+            )}
+          ></p>
+        )}
         <div
           className={cn(
             "absolute scale-0 transition-all w-20 h-20 rounded-full duration-500",
@@ -104,13 +117,10 @@ function TableCell({
           )}
           style={{ ...style, width: `calc(100%*2)`, height: `calc(100%*2)` }}
         />
-        {displayCurrentDayIndicator && isToday ? (
-          <span className="absolute top-1 right-1 rounded-full w-2 h-2 bg-red-400/80"></span>
-        ) : null}
       </div>
       <div
         className={cn(
-          "absolute inset-0 ring-1 ring-inset ring-accent -z-10 transition-all",
+          "absolute inset-0 ring-1 ring-inset ring-accent -z-10 transition-all ring-opacity-0",
           ring ? "" : "ring-0"
         )}
       ></div>
