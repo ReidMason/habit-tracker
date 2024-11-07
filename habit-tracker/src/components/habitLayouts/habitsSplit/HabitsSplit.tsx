@@ -27,6 +27,8 @@ export default function HabitsSplit({
             habit={habit}
             createHabitEntry={createHabitEntry}
             fetchHabits={fetchHabits}
+            year={pivotDate.getFullYear()}
+            month={pivotDate.getMonth()}
           />
         ))}
       </div>

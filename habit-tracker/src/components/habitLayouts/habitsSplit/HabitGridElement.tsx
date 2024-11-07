@@ -8,14 +8,18 @@ interface Props {
   habit: Habit;
   createHabitEntry: CreateHabitEntry;
   fetchHabits: FetchHabits;
+  year: number;
+  month: number;
 }
 
 export default function HabitGridElement({
   habit,
   createHabitEntry,
   fetchHabits,
+  year,
+  month,
 }: Props) {
-  const daysInMonth = getDaysInMonth(2024, 10);
+  const daysInMonth = getDaysInMonth(year, month);
 
   return (
     <div className="text-xl flex flex-col gap-2">
