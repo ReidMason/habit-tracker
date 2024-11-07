@@ -1,5 +1,5 @@
 import { deleteHabit, updateHabit, type Habit } from "@/lib/api";
-import React from "react";
+import { useState } from "react";
 import HabitDropdown from "@/components/habits/HabitDropdown";
 import HabitDialog from "@/components/habits/HabitDialog";
 import ConfirmDialog from "@/components/confirmDialog/ConfirmDialog";
@@ -29,8 +29,8 @@ export default function HabitRow({
   dragging,
   createHabitEntry,
 }: HabitRowProps) {
-  const [editDialogOpen, setEditDialogOpen] = React.useState(false);
-  const [removeDialogOpen, setRemoveDialogOpen] = React.useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const getDaysInMonth = () => {
     const year = selectedDate.getFullYear();
