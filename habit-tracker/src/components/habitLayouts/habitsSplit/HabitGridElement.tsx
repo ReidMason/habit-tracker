@@ -20,15 +20,32 @@ export default function HabitGridElement({
   year,
   month,
 }: Props) {
-  const daysInMonth = getDaysInMonth(year, month);
+  const firstDayOfMonth = new Date(year, month, 1);
+  const mondayBeforeFirstDayOfMonth = new Date(
+    firstDayOfMonth.setDate(
+      firstDayOfMonth.getDate() - firstDayOfMonth.getDay() + 1
+    )
+  );
+  const daysInMonth = [] as Date[];
+  const daysDisplayed = 35;
+  for (let i = 0; i < daysDisplayed; i++) {
+    const newdate = new Date(mondayBeforeFirstDayOfMonth);
+    newdate.setDate(mondayBeforeFirstDayOfMonth.getDate() + i);
+    daysInMonth.push(newdate);
+  }
 
   return (
-    <div className="text-xl flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
       <div className="flex justify-between">
-        <p>{habit.name}</p>
+        <p className="text-xl">{habit.name}</p>
         <HabitContextMenu habit={habit} fetchHabits={fetchHabits} />
       </div>
       <div className="grid grid-cols-7">
+        {Array.from({ length: 7 }).map((_, index) => (
+          <div key={index} className="text-center">
+            {["M", "T", "W", "T", "F", "S", "S"][index]}
+          </div>
+        ))}
         {daysInMonth.map((date) => {
           const entry = getMatchingEntry(habit.entries, date);
           return (
@@ -46,3 +63,4 @@ export default function HabitGridElement({
     </div>
   );
 }
+//{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][index]}

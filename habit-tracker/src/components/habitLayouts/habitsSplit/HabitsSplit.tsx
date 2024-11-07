@@ -19,7 +19,6 @@ export default function HabitsSplit({
 }: Props) {
   return (
     <div>
-      <h1 className="text-xl font-semibold">Habits Split</h1>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {habits.map((habit) => (
           <HabitGridElement
