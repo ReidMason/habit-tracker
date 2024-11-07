@@ -114,7 +114,7 @@ function TableCell({
             "absolute scale-0 transition-all w-20 h-20 rounded-full duration-500",
             cellClassName
           )}
-          style={style}
+          style={{ ...style, width: `calc(100%*2)`, height: `calc(100%*2)` }}
         />
       </div>
       <div
