@@ -43,22 +43,28 @@ export default function HabitWrapper() {
   };
 
   return (
-    <div className="border rounded-xl flex-col p-4">
+    <div className="flex flex-col gap-4">
       <MonthSelector pivotDate={pivotDate} setPivotDate={setPivotDate} />
-      <Month
-        habits={habits}
-        pivotDate={pivotDate}
-        fetchHabits={fetchHabits}
-        createHabitEntry={createNewHabitEntry}
-        updateHabits={updateAllHabits}
-      />
-      <HabitsSplit
-        habits={habits}
-        pivotDate={pivotDate}
-        fetchHabits={fetchHabits}
-        createHabitEntry={createNewHabitEntry}
-        updateHabits={updateAllHabits}
-      />
+      <div className="flex flex-col gap-4">
+        <div className="border rounded-xl flex-col p-4">
+          <Month
+            habits={habits}
+            pivotDate={pivotDate}
+            fetchHabits={fetchHabits}
+            createHabitEntry={createNewHabitEntry}
+            updateHabits={updateAllHabits}
+          />
+        </div>
+        <div className="border rounded-xl flex-col p-4">
+          <HabitsSplit
+            habits={habits}
+            pivotDate={pivotDate}
+            fetchHabits={fetchHabits}
+            createHabitEntry={createNewHabitEntry}
+            updateHabits={updateAllHabits}
+          />
+        </div>
+      </div>
     </div>
   );
 }

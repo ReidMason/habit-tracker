@@ -8,7 +8,7 @@ interface Props {
 
 export default function MonthSelector({ pivotDate, setPivotDate }: Props) {
   return (
-    <div className="flex gap-2 items-center mb-4">
+    <div className="flex gap-2 items-center">
       <Button
         onClick={() => {
           const newDate = new Date(pivotDate);
