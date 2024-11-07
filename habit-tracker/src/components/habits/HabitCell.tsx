@@ -102,8 +102,7 @@ function TableCell({
   isToday,
 }: TableCellProps) {
   return (
-    <div className="relative max-h-12 max-w-12 transition-all">
-      <div className="h-12 w-12" />
+    <div className="relative aspect-square transition-all overflow-hidden">
       <div
         className={cn(
           "absolute flex inset-0 items-center justify-center -z-10 overflow-hidden",
