@@ -1,14 +1,11 @@
-import { deleteHabit, updateHabit, type Habit } from "@/lib/api";
-import { useState } from "react";
-import HabitDropdown from "@/components/habits/HabitDropdown";
-import HabitDialog from "@/components/habits/HabitDialog";
-import ConfirmDialog from "@/components/confirmDialog/ConfirmDialog";
+import { type Habit } from "@/lib/api";
 import type { DraggableAttributes } from "@dnd-kit/core";
 import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
 import type { FetchHabits } from "@/components/types";
 import HabitCell from "@/components/habits/HabitCell";
 import { getMatchingEntry } from "@/lib/habits";
+import HabitContextMenu from "@/components/habits/HabitContextMenu";
 
 interface HabitRowProps {
   habit: Habit;
@@ -29,9 +26,6 @@ export default function HabitRow({
   dragging,
   createHabitEntry,
 }: HabitRowProps) {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-
   const getDaysInMonth = () => {
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
@@ -45,16 +39,6 @@ export default function HabitRow({
     return days;
   };
 
-  const editHabit = async (newHabit: Habit) => {
-    await updateHabit(newHabit);
-    await fetchHabits();
-  };
-
-  const removeHabit = async (habit: Habit) => {
-    await deleteHabit(habit.id);
-    await fetchHabits();
-  };
-
   return (
     <>
       <td
@@ -65,29 +49,7 @@ export default function HabitRow({
         {...attributes}
         {...listeners}
       >
-        <HabitDialog
-          title="Edit Habit"
-          description="Edit the habit details"
-          confirmText="Save"
-          habit={habit}
-          submit={editHabit}
-          open={editDialogOpen}
-          setOpen={setEditDialogOpen}
-        />
-        <ConfirmDialog
-          title="Remove Habit"
-          description="Are you sure you want to remove this habit?"
-          confirmText="Remove"
-          habit={habit}
-          submit={removeHabit}
-          open={removeDialogOpen}
-          setOpen={setRemoveDialogOpen}
-        />
-        <HabitDropdown
-          habit={habit}
-          editHabit={() => setEditDialogOpen(true)}
-          removeHabit={() => setRemoveDialogOpen(true)}
-        />
+        <HabitContextMenu habit={habit} fetchHabits={fetchHabits} />
         {habit.name}
       </td>
       {getDaysInMonth().map((date) => {
