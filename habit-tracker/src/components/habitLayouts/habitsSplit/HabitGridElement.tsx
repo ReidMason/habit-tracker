@@ -28,7 +28,7 @@ export default function HabitGridElement({
         <p className="text-xl">{habit.name}</p>
         <HabitContextMenu habit={habit} fetchHabits={fetchHabits} />
       </div>
-      <div className="grid grid-cols-7 border">
+      <div className="grid grid-cols-7 border rounded-lg">
         {Array.from({ length: 7 }).map((_, index) => (
           <div key={index} className="text-center border-b">
             {["M", "T", "W", "T", "F", "S", "S"][index]}
