@@ -12,6 +12,7 @@ interface HabitCellProps {
   date: Date;
   createHabitEntry: (habitId: number, date: Date) => Promise<void>;
   fetchHabits: FetchHabits;
+  as?: React.ElementType;
 }
 
 export default function HabitCell({
@@ -20,7 +21,9 @@ export default function HabitCell({
   date,
   createHabitEntry,
   fetchHabits,
+  as,
 }: HabitCellProps) {
+  const Component = as || "div";
   const currentDate = new Date();
 
   const addEntry = async (date: Date) => {
@@ -36,65 +39,77 @@ export default function HabitCell({
     await fetchHabits();
   };
 
-  if (entry !== undefined) {
-    return (
-      <TableCell
-        noRing
-        key={date.toJSON()}
-        className=""
-        cellClassName="scale-100"
-        style={{
-          backgroundColor: habit.colour,
-          opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
-        }}
-      >
-        <button
-          onClick={() => removeEntry(entry.id)}
-          className="w-full h-full"
-        ></button>
-      </TableCell>
-    );
-  } else if (datesMatch(date, currentDate)) {
-    return (
-      <TableCell key={date.toJSON()} className="bg-secondary/80">
-        <button
-          onClick={() => addEntry(date)}
-          className="w-full h-full"
-        ></button>
-      </TableCell>
-    );
-  } else if (date.getTime() > currentDate.getTime() + 1) {
-    return <TableCell key={date.toJSON()} />;
-  } else {
-    return (
-      <TableCell key={date.toJSON()}>
-        <button
-          onClick={() => addEntry(date)}
-          className="w-full h-full"
-        ></button>
-      </TableCell>
-    );
-  }
+  const isToday = datesMatch(date, currentDate);
+
+  const getTableCell = () => {
+    if (entry !== undefined) {
+      return (
+        <TableCell
+          noRing
+          key={date.toJSON()}
+          cellClassName="scale-100"
+          style={{
+            backgroundColor: habit.colour,
+            opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
+          }}
+          isToday={isToday}
+        >
+          <button
+            onClick={() => removeEntry(entry.id)}
+            className="w-full h-full"
+          ></button>
+        </TableCell>
+      );
+    } else if (isToday) {
+      return (
+        <TableCell key={date.toJSON()} isToday={isToday}>
+          <button
+            onClick={() => addEntry(date)}
+            className="w-full h-full"
+          ></button>
+        </TableCell>
+      );
+    } else if (date.getTime() > currentDate.getTime() + 1) {
+      return <TableCell key={date.toJSON()} isToday={isToday} />;
+    } else {
+      return (
+        <TableCell key={date.toJSON()} isToday={isToday}>
+          <button
+            onClick={() => addEntry(date)}
+            className="w-full h-full"
+          ></button>
+        </TableCell>
+      );
+    }
+  };
+
+  return <Component className="p-0">{getTableCell()}</Component>;
 }
 
 interface TableCellProps {
-  className?: string;
   cellClassName?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
   noRing?: boolean;
+  isToday: boolean;
 }
 
 function TableCell({
-  className,
   cellClassName,
   children,
   style,
   noRing,
+  isToday,
 }: TableCellProps) {
   return (
-    <td className={cn("relative h-12 w-12 transition-all", className)}>
-      <div className="absolute flex inset-0 items-center justify-center -z-10 overflow-hidden">
+    <div className="relative max-h-12 max-w-12 transition-all">
+      <div className="h-12 w-12" />
+      <div
+        className={cn(
+          "absolute flex inset-0 items-center justify-center -z-10 overflow-hidden",
+          isToday ? "bg-secondary/80" : ""
+        )}
+      >
         <div
           className={cn(
             "absolute scale-0 transition-all w-20 h-20 rounded-full duration-500",
@@ -110,6 +125,6 @@ function TableCell({
         )}
       ></div>
       {children}
-    </td>
+    </div>
   );
 }

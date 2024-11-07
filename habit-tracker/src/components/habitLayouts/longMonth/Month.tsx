@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createHabit, createHabitEntry, type Habit } from "@/lib/api";
+import { createHabit, type Habit } from "@/lib/api";
 import {
   closestCenter,
   DndContext,
@@ -22,14 +22,13 @@ import {
   restrictToParentElement,
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
-import { tryTriggerConfetti } from "@/lib/utils";
 import { datesMatch } from "@/lib/dates";
 import { SortableItem } from "@/components/sortable/SortableItem";
 import HabitDialog from "@/components/habits/HabitDialog";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@radix-ui/react-icons";
 import HabitRow from "./HabitRow";
-import type { FetchHabits } from "@/components/types";
+import type { CreateHabitEntry, FetchHabits } from "@/components/types";
 import { getDaysInMonth } from "@/lib/dates";
 
 const userId = 1;
@@ -39,6 +38,7 @@ interface Props {
   fetchHabits: FetchHabits;
   updateHabits: (habits: Habit[]) => Promise<void>;
   pivotDate: Date;
+  createHabitEntry: CreateHabitEntry;
 }
 
 export default function Month({
@@ -46,6 +46,7 @@ export default function Month({
   fetchHabits,
   updateHabits,
   pivotDate,
+  createHabitEntry,
 }: Props) {
   const [activeHabit, setActiveHabit] = useState<Habit | null>(null);
 
@@ -106,12 +107,6 @@ export default function Month({
     setActiveHabit(habit);
   };
 
-  const createNewHabitEntry = async (habitId: number, date: Date) => {
-    await createHabitEntry(habitId, date);
-    const newHabits = await fetchHabits();
-    tryTriggerConfetti(newHabits, date);
-  };
-
   return (
     <div className="overflow-x-auto">
       <DndContext
@@ -151,7 +146,7 @@ export default function Month({
                   habit={habit}
                   selectedDate={pivotDate}
                   fetchHabits={fetchHabits}
-                  createHabitEntry={createNewHabitEntry}
+                  createHabitEntry={createHabitEntry}
                 />
               ))}
             </SortableContext>
@@ -192,7 +187,7 @@ export default function Month({
                     habit={activeHabit}
                     selectedDate={pivotDate}
                     fetchHabits={fetchHabits}
-                    createHabitEntry={createNewHabitEntry}
+                    createHabitEntry={createHabitEntry}
                   />
                 </tr>
               </tbody>

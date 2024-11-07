@@ -8,6 +8,7 @@ import type { SyntheticListenerMap } from "@dnd-kit/core/dist/hooks/utilities";
 import { cn } from "@/lib/utils";
 import type { FetchHabits } from "@/components/types";
 import HabitCell from "@/components/habits/HabitCell";
+import { getMatchingEntry } from "@/lib/habits";
 
 interface HabitRowProps {
   habit: Habit;
@@ -42,12 +43,6 @@ export default function HabitRow({
       date.setDate(date.getDate() + 1);
     }
     return days;
-  };
-
-  const getMatchingEntry = (date: Date) => {
-    return habit?.entries.find((entry) => {
-      return new Date(entry.date).toDateString() === date.toDateString();
-    });
   };
 
   const editHabit = async (newHabit: Habit) => {
@@ -96,9 +91,10 @@ export default function HabitRow({
         {habit.name}
       </td>
       {getDaysInMonth().map((date) => {
-        const entry = getMatchingEntry(date);
+        const entry = getMatchingEntry(habit.entries, date);
         return (
           <HabitCell
+            as="td"
             key={date.toJSON()}
             habit={habit}
             entry={entry}
