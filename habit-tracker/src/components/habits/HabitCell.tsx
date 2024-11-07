@@ -26,7 +26,6 @@ export default function HabitCell({
   displayCurrentDayIndicator,
 }: HabitCellProps) {
   const Component = as || "div";
-  const currentDate = new Date();
 
   const addEntry = async (date: Date) => {
     date = new Date(
@@ -41,73 +40,43 @@ export default function HabitCell({
     await fetchHabits();
   };
 
+  const currentDate = new Date();
   const isToday = datesMatch(date, currentDate);
+  const hasEntry = entry !== undefined;
 
-  const getTableCell = () => {
-    if (entry !== undefined) {
-      return (
-        <TableCell
-          noRing
-          key={date.toJSON()}
-          cellClassName="scale-100"
-          style={{
-            backgroundColor: habit.colour,
-            opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
-          }}
-          isToday={isToday}
-          displayCurrentDayIndicator={displayCurrentDayIndicator}
-        >
-          <button
-            onClick={() => removeEntry(entry.id)}
-            className="w-full h-full"
-          ></button>
-        </TableCell>
-      );
-    } else if (isToday) {
-      return (
-        <TableCell
-          key={date.toJSON()}
-          isToday={isToday}
-          displayCurrentDayIndicator={displayCurrentDayIndicator}
-        >
-          <button
-            onClick={() => addEntry(date)}
-            className="w-full h-full"
-          ></button>
-        </TableCell>
-      );
-    } else if (date.getTime() > currentDate.getTime() + 1) {
-      return (
-        <TableCell
-          key={date.toJSON()}
-          isToday={isToday}
-          displayCurrentDayIndicator={displayCurrentDayIndicator}
-        />
-      );
-    } else {
-      return (
-        <TableCell
-          key={date.toJSON()}
-          isToday={isToday}
-          displayCurrentDayIndicator={displayCurrentDayIndicator}
-        >
-          <button
-            onClick={() => addEntry(date)}
-            className="w-full h-full"
-          ></button>
-        </TableCell>
-      );
-    }
-  };
+  const tableCellStyle = hasEntry
+    ? {
+        backgroundColor: habit.colour,
+        opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
+      }
+    : undefined;
+  const afterToday = date.getTime() > currentDate.getTime();
 
-  return <Component className="p-0">{getTableCell()}</Component>;
+  return (
+    <Component className="p-0">
+      <TableCell
+        ring={!hasEntry}
+        cellClassName={hasEntry ? "scale-100" : undefined}
+        style={tableCellStyle}
+        isToday={isToday}
+        displayCurrentDayIndicator={displayCurrentDayIndicator}
+      >
+        {!afterToday && (
+          <button
+            onClick={() => (hasEntry ? removeEntry(entry.id) : addEntry(date))}
+            className="w-full h-full"
+          ></button>
+        )}
+      </TableCell>
+    </Component>
+  );
 }
 
 interface TableCellProps {
   cellClassName?: string;
   style?: React.CSSProperties;
   children?: React.ReactNode;
-  noRing?: boolean;
+  ring?: boolean;
   isToday: boolean;
   displayCurrentDayIndicator?: boolean;
 }
@@ -116,7 +85,7 @@ function TableCell({
   cellClassName,
   children,
   style,
-  noRing,
+  ring,
   isToday,
   displayCurrentDayIndicator,
 }: TableCellProps) {
@@ -142,7 +111,7 @@ function TableCell({
       <div
         className={cn(
           "absolute inset-0 ring-1 ring-inset ring-accent -z-10 transition-all",
-          noRing ? "ring-0" : ""
+          ring ? "" : "ring-0"
         )}
       ></div>
       {children}
