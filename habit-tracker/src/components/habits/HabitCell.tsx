@@ -13,6 +13,7 @@ interface HabitCellProps {
   createHabitEntry: (habitId: number, date: Date) => Promise<void>;
   fetchHabits: FetchHabits;
   as?: React.ElementType;
+  displayCurrentDayIndicator?: boolean;
 }
 
 export default function HabitCell({
@@ -22,6 +23,7 @@ export default function HabitCell({
   createHabitEntry,
   fetchHabits,
   as,
+  displayCurrentDayIndicator,
 }: HabitCellProps) {
   const Component = as || "div";
   const currentDate = new Date();
@@ -53,6 +55,7 @@ export default function HabitCell({
             opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
           }}
           isToday={isToday}
+          displayCurrentDayIndicator={displayCurrentDayIndicator}
         >
           <button
             onClick={() => removeEntry(entry.id)}
@@ -62,7 +65,11 @@ export default function HabitCell({
       );
     } else if (isToday) {
       return (
-        <TableCell key={date.toJSON()} isToday={isToday}>
+        <TableCell
+          key={date.toJSON()}
+          isToday={isToday}
+          displayCurrentDayIndicator={displayCurrentDayIndicator}
+        >
           <button
             onClick={() => addEntry(date)}
             className="w-full h-full"
@@ -70,10 +77,20 @@ export default function HabitCell({
         </TableCell>
       );
     } else if (date.getTime() > currentDate.getTime() + 1) {
-      return <TableCell key={date.toJSON()} isToday={isToday} />;
+      return (
+        <TableCell
+          key={date.toJSON()}
+          isToday={isToday}
+          displayCurrentDayIndicator={displayCurrentDayIndicator}
+        />
+      );
     } else {
       return (
-        <TableCell key={date.toJSON()} isToday={isToday}>
+        <TableCell
+          key={date.toJSON()}
+          isToday={isToday}
+          displayCurrentDayIndicator={displayCurrentDayIndicator}
+        >
           <button
             onClick={() => addEntry(date)}
             className="w-full h-full"
@@ -92,6 +109,7 @@ interface TableCellProps {
   children?: React.ReactNode;
   noRing?: boolean;
   isToday: boolean;
+  displayCurrentDayIndicator?: boolean;
 }
 
 function TableCell({
@@ -100,6 +118,7 @@ function TableCell({
   style,
   noRing,
   isToday,
+  displayCurrentDayIndicator,
 }: TableCellProps) {
   return (
     <div className="relative aspect-square transition-all overflow-hidden">
@@ -116,6 +135,9 @@ function TableCell({
           )}
           style={{ ...style, width: `calc(100%*2)`, height: `calc(100%*2)` }}
         />
+        {displayCurrentDayIndicator && isToday ? (
+          <span className="absolute top-1 right-1 rounded-full w-2 h-2 bg-red-400/80"></span>
+        ) : null}
       </div>
       <div
         className={cn(

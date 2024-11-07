@@ -56,6 +56,7 @@ export default function HabitGridElement({
               date={date}
               createHabitEntry={createHabitEntry}
               fetchHabits={fetchHabits}
+              displayCurrentDayIndicator
             />
           );
         })}
