@@ -43,7 +43,7 @@ export default function HabitWrapper() {
   };
 
   return (
-    <div className="border rounded-xl inline-flex flex-col p-4">
+    <div className="border rounded-xl flex-col p-4">
       <MonthSelector pivotDate={pivotDate} setPivotDate={setPivotDate} />
       <Month
         habits={habits}

@@ -108,7 +108,7 @@ export default function Month({
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-scroll">
       <DndContext
         modifiers={[restrictToVerticalAxis, restrictToParentElement]}
         sensors={sensors}
