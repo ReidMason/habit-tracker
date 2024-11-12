@@ -43,7 +43,7 @@ export default function HabitRow({
     <>
       <td
         className={cn(
-          "w-32 pr-4 flex items-center touch-none h-12",
+          "w-32 pr-4 flex items-center touch-none h-12 sticky left-0 bg-background",
           dragging ? "cursor-grabbing" : "cursor-grab"
         )}
         {...attributes}
@@ -57,6 +57,7 @@ export default function HabitRow({
         return (
           <HabitCell
             as="td"
+            className={dragging ? "w-12 h-12" : ""}
             key={date.toJSON()}
             habit={habit}
             entry={entry}

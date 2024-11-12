@@ -15,6 +15,7 @@ interface HabitCellProps {
   as?: React.ElementType;
   displayCurrentDayIndicator?: boolean;
   ring?: boolean;
+  className?: string;
 }
 
 export default function HabitCell({
@@ -26,6 +27,7 @@ export default function HabitCell({
   as,
   displayCurrentDayIndicator,
   ring,
+  className,
 }: HabitCellProps) {
   const Component = as || "div";
 
@@ -55,7 +57,7 @@ export default function HabitCell({
   const afterToday = date.getTime() > currentDate.getTime();
 
   return (
-    <Component className="p-0">
+    <Component className={cn("p-0", className)}>
       <TableCell
         date={date}
         ring={ring || !hasEntry}
