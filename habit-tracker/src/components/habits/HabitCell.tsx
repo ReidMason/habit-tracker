@@ -1,6 +1,6 @@
 import { deleteHabitEntry, type Habit, type HabitEntry } from "@/lib/api";
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn, hexToRgb } from "@/lib/utils";
 import type { FetchHabits } from "@/components/types";
 import { datesMatch } from "@/lib/dates";
 
@@ -48,21 +48,15 @@ export default function HabitCell({
   const isToday = datesMatch(date, currentDate);
   const hasEntry = entry !== undefined;
 
-  const tableCellStyle = hasEntry
-    ? {
-        backgroundColor: habit.colour,
-        opacity: Math.min(entry.combo, fullCombo) / fullCombo + 0.3,
-      }
-    : undefined;
   const afterToday = date.getTime() > currentDate.getTime();
 
   return (
     <Component className={cn("p-0", className)}>
       <TableCell
-        date={date}
+        habit={habit}
         ring={ring || !hasEntry}
+        entry={entry}
         cellClassName={hasEntry ? "scale-100" : undefined}
-        style={tableCellStyle}
         isToday={isToday}
         displayCurrentDayIndicator={displayCurrentDayIndicator}
       >
@@ -78,9 +72,9 @@ export default function HabitCell({
 }
 
 interface TableCellProps {
-  date: Date;
+  habit: Habit;
+  entry?: HabitEntry;
   cellClassName?: string;
-  style?: React.CSSProperties;
   children?: React.ReactNode;
   ring?: boolean;
   isToday: boolean;
@@ -88,14 +82,40 @@ interface TableCellProps {
 }
 
 function TableCell({
-  date,
+  habit,
+  entry,
   cellClassName,
   children,
-  style,
   ring,
   isToday,
   displayCurrentDayIndicator,
 }: TableCellProps) {
+  const comboBaseline = 3;
+  const comboOpacityMinimum = comboBaseline / 10;
+  const comboOpacity = entry
+    ? Math.min(
+        Math.min(entry.combo, fullCombo) / fullCombo + comboOpacityMinimum,
+        0.9
+      )
+    : 0;
+  const tableCellStyle = entry
+    ? {
+        backgroundColor: habit.colour,
+        opacity: comboOpacity,
+      }
+    : undefined;
+
+  const habitColourRgb = hexToRgb(habit.colour);
+
+  const ringStyle = {
+    opacity: comboOpacity,
+    "--tw-ring-color":
+      habitColourRgb &&
+      `rgba(${habitColourRgb.r}, ${habitColourRgb.g}, ${habitColourRgb.b}, ${comboOpacity})`,
+  } as React.CSSProperties;
+
+  const atFullCombo = entry && entry.combo >= fullCombo - comboBaseline;
+
   return (
     <div className="relative aspect-square transition-all overflow-hidden">
       <div
@@ -117,14 +137,19 @@ function TableCell({
             "absolute scale-0 transition-all w-20 h-20 rounded-full duration-500",
             cellClassName
           )}
-          style={{ ...style, width: `calc(100%*2)`, height: `calc(100%*2)` }}
+          style={{
+            ...tableCellStyle,
+            width: `calc(100%*2)`,
+            height: `calc(100%*2)`,
+          }}
         />
       </div>
       <div
         className={cn(
-          "absolute inset-0 ring-1 ring-inset ring-accent -z-10 transition-all ring-opacity-0",
-          ring ? "" : "ring-0"
+          "absolute inset-0 ring-inset ring-accent -z-10 transition-all",
+          (ring && atFullCombo) || !entry ? "ring-1" : ""
         )}
+        style={atFullCombo ? ringStyle : {}}
       ></div>
       {children}
     </div>
