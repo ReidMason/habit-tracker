@@ -16,4 +16,4 @@ DELETE FROM habits WHERE id = ? RETURNING *;
 
 -- name: UpdateHabit :one
 -- Update a habit by ID
-UPDATE habits SET name = ?, description = ?, colour = ?, `index` = ?, updated_at = ? WHERE id = ? RETURNING *;
+UPDATE habits SET name = ?, description = ?, colour = ?, `index` = ?, active = ?, updated_at = ? WHERE id = ? RETURNING *;

@@ -51,7 +51,7 @@ func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, habit := range habits {
-		err = h.db.UpdateHabit(habit.Id, habit.Name, habit.Colour, habit.Index)
+		err = h.db.UpdateHabit(habit.Id, habit.Name, habit.Colour, habit.Index, habit.Active)
 		if err != nil {
 			h.logger.Error("Failed to edit habit", slog.Any("error", err))
 			w.WriteHeader(http.StatusInternalServerError)
@@ -79,7 +79,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.db.UpdateHabit(habitId, habit.Name, habit.Colour, habit.Index)
+	err = h.db.UpdateHabit(habitId, habit.Name, habit.Colour, habit.Index, habit.Active)
 	if err != nil {
 		h.logger.Error("Failed to edit habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
