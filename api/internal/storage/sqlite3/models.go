@@ -17,6 +17,7 @@ type Habit struct {
 	UpdatedAt   string
 	Colour      string
 	Index       int64
+	Active      interface{}
 }
 
 type HabitEntry struct {
