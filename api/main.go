@@ -47,15 +47,15 @@ func run(w io.Writer, args cmdArgs) error {
 	mux.Handle("/", http.FileServer(http.Dir("./static")))
 
 	habitController := controllers.NewHabitController(db, logger)
-	mux.HandleFunc("GET /api/user/{userId}/habit", habitController.GetHabits)
-	mux.HandleFunc("POST /api/user/{userId}/habit", habitController.CreateHabit)
-	mux.HandleFunc("PUT /api/user/{userId}/habit", habitController.EditHabits)
-	mux.HandleFunc("DELETE /api/habit/{habitId}", habitController.DeleteHabit)
-	mux.HandleFunc("PUT /api/habit/{habitId}", habitController.EditHabit)
+	mux.HandleFunc("GET /api/users/{userId}/habits", habitController.GetHabits)
+	mux.HandleFunc("POST /api/users/{userId}/habits", habitController.CreateHabit)
+	mux.HandleFunc("PUT /api/users/{userId}/habits", habitController.EditHabits)
+	mux.HandleFunc("DELETE /api/habits/{habitId}", habitController.DeleteHabit)
+	mux.HandleFunc("PUT /api/habits/{habitId}", habitController.EditHabit)
 
 	habitEntryController := controllers.NewHabitEntryController(db, logger)
-	mux.HandleFunc("POST /api/habitEntry", habitEntryController.CreateHabitEntry)
-	mux.HandleFunc("DELETE /api/habitEntry/{entryId}", habitEntryController.DeleteHabitEntry)
+	mux.HandleFunc("POST /api/habitEntries", habitEntryController.CreateHabitEntry)
+	mux.HandleFunc("DELETE /api/habitEntries/{entryId}", habitEntryController.DeleteHabitEntry)
 
 	controllers.AddUserRoutes(mux, db, logger)
 

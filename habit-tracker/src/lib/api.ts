@@ -21,7 +21,7 @@ export type Habit = z.infer<typeof habitSchema>;
 export type HabitEntry = z.infer<typeof habitEntrySchema>;
 
 export async function getHabits(userId: number): Promise<Habit[]> {
-  const result = await fetch(`${baseUrl}/user/${userId}/habit`);
+  const result = await fetch(`${baseUrl}/users/${userId}/habits`);
   const response = await result.json();
   const data = z.array(habitSchema).parse(response);
 
@@ -38,7 +38,7 @@ export async function createHabit(
   newHabit: NewHabit
 ): Promise<Habit> {
   try {
-    const result = await fetch(`${baseUrl}/user/${userId}/habit`, {
+    const result = await fetch(`${baseUrl}/users/${userId}/habits`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -63,7 +63,7 @@ export async function createHabit(
 
 export async function deleteHabit(habitId: number) {
   try {
-    await fetch(`${baseUrl}/habit/${habitId}`, {
+    await fetch(`${baseUrl}/habits/${habitId}`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -72,7 +72,7 @@ export async function deleteHabit(habitId: number) {
 }
 
 export async function getHabit(habitId: number): Promise<Habit> {
-  const result = await fetch(`${baseUrl}/habit/${habitId}`);
+  const result = await fetch(`${baseUrl}/habits/${habitId}`);
   const response = await result.json();
 
   const data = habitSchema.parse(response);
@@ -81,7 +81,7 @@ export async function getHabit(habitId: number): Promise<Habit> {
 }
 
 export async function updateHabit(habit: Habit) {
-  fetch(`${baseUrl}/habit/${habit.id}`, {
+  fetch(`${baseUrl}/habits/${habit.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export async function updateHabit(habit: Habit) {
 
 export async function createHabitEntry(habitId: number, date: Date) {
   try {
-    await fetch(`${baseUrl}/habitEntry`, {
+    await fetch(`${baseUrl}/habitEntries`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,7 +106,7 @@ export async function createHabitEntry(habitId: number, date: Date) {
 
 export async function deleteHabitEntry(entryId: number) {
   try {
-    await fetch(`${baseUrl}/habitEntry/${entryId}`, {
+    await fetch(`${baseUrl}/habitEntries/${entryId}`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -116,7 +116,7 @@ export async function deleteHabitEntry(entryId: number) {
 
 export async function updateHabits(userId: number, habits: Habit[]) {
   try {
-    await fetch(`${baseUrl}/user/${userId}/habit`, {
+    await fetch(`${baseUrl}/users/${userId}/habits`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
