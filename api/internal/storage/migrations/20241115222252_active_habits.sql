@@ -1,7 +1,7 @@
 -- +goose Up
 -- +goose StatementBegin
 SELECT 'up SQL query';
-ALTER TABLE habits ADD COLUMN active bit NOT NULL DEFAULT 1;
+ALTER TABLE habits ADD COLUMN active BOOLEAN NOT NULL DEFAULT 1;
 -- +goose StatementEnd
 
 -- +goose Down
