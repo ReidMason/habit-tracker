@@ -14,6 +14,7 @@ const habitSchema = z.object({
   colour: z.string(),
   index: z.number(),
   entries: z.array(habitEntrySchema),
+  active: z.boolean(),
 });
 
 export type Habit = z.infer<typeof habitSchema>;
@@ -49,7 +50,14 @@ export async function createHabit(
     return data;
   } catch (error) {
     console.error(error);
-    return { id: -1, name: "", entries: [], colour: "", index: 0 };
+    return {
+      id: -1,
+      name: "",
+      entries: [],
+      colour: "",
+      index: 0,
+      active: false,
+    };
   }
 }
 
