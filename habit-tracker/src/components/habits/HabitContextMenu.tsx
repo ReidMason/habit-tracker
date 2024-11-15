@@ -23,7 +23,7 @@ export default function HabitContextMenu({
   };
 
   const removeHabit = async (habit: Habit) => {
-    await deleteHabit(habit.id);
+    await updateHabit({ ...habit, active: false });
     await fetchHabits();
   };
 
