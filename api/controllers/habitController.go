@@ -37,8 +37,15 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.logger.Debug("Got habits", slog.Any("habits", habits))
-	successWithBody(w, habits)
+	activeHabits := make([]storage.Habit, 0)
+	for _, habit := range habits {
+		if habit.Active {
+			activeHabits = append(activeHabits, habit)
+		}
+	}
+
+	h.logger.Debug("Got habits", slog.Any("habits", activeHabits))
+	successWithBody(w, activeHabits)
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
