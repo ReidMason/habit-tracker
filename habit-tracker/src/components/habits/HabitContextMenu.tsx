@@ -1,4 +1,4 @@
-import { deleteHabit, updateHabit, type Habit } from "@/lib/api";
+import { updateHabit, type Habit } from "@/lib/api";
 import type { FetchHabits } from "../types";
 import { useState } from "react";
 import HabitDialog from "./HabitDialog";

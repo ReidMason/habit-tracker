@@ -185,6 +185,7 @@ export default function Month({
           colour: "#000000",
           entries: [],
           index: 0,
+          active: false,
         }}
         submit={async (newHabit: Habit) => {
           await createHabit(userId, newHabit);
