@@ -36,8 +36,6 @@ func run(w io.Writer, args cmdArgs) error {
 		return err
 	}
 
-	// db.Reset()
-
 	err = db.ApplyMigrations()
 	if err != nil {
 		logger.Error("Failed to apply migrations", slog.Any("error", err))
