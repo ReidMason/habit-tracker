@@ -37,20 +37,21 @@ func (s *HabitEntryService) GetHabitEntries(habitId int64) ([]models.HabitEntry,
 	combo := 0
 	var tomorrow time.Time
 	for i, entry := range entries {
-		entryDate, err := time.Parse(time.DateOnly, entry.Date)
+		habitEntry, err := models.NewHabitEntryFromStorage(entry)
 		if err != nil {
 			return nil, err
 		}
 
-		if combo > 0 && entryDate == tomorrow {
+		if combo > 0 && habitEntry.Date == tomorrow {
 			combo++
 		} else {
 			combo = 1
 		}
 
-		tomorrow = entryDate.AddDate(0, 0, 1)
+		tomorrow = habitEntry.Date.AddDate(0, 0, 1)
 
-		habitEntries[i] = models.NewHabitEntry(entryDate, entry.ID, combo)
+		habitEntry.Combo = combo
+		habitEntries[i] = habitEntry
 	}
 
 	return habitEntries, nil
