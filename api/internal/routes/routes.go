@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 
-	"github.com/ReidMason/habit-tracker/controllers"
+	"github.com/ReidMason/habit-tracker/internal/controllers"
 	"github.com/ReidMason/habit-tracker/internal/logger"
 	"github.com/ReidMason/habit-tracker/internal/storage"
 )
