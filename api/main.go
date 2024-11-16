@@ -1,81 +1,49 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
-	"io"
 	"log/slog"
-	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/ReidMason/habit-tracker/controllers"
-	"github.com/ReidMason/habit-tracker/internal/storage"
+	"github.com/ReidMason/habit-tracker/internal/config"
+	"github.com/ReidMason/habit-tracker/internal/server"
 	"github.com/charmbracelet/log"
-	"github.com/rs/cors"
 )
 
 type cmdArgs struct {
 	listenAddr string
 }
 
-const dbLocation = "./data/data.db"
+func main() {
+	args := cmdArgs{listenAddr: *flag.String("listen-addr", ":8000", "server listen address")}
+	flag.Parse()
 
-func run(w io.Writer, args cmdArgs) error {
-	handler := log.New(w)
+	handler := log.New(os.Stdout)
 	handler.SetLevel(log.DebugLevel)
 	logger := slog.New(handler)
 	slog.SetLogLoggerLevel(slog.LevelDebug)
 	slog.SetDefault(logger)
 
-	logger.Debug("Starting up", slog.String("listenAddr", args.listenAddr))
-
-	logger.Info("Initialising storage")
-	db, err := storage.NewSqliteStorage(dbLocation, logger)
+	cfg, err := config.Load(args.listenAddr)
 	if err != nil {
-		logger.Error("Failed to initialise storage", slog.Any("error", err))
-		return err
+		logger.Error("Failed to load config", slog.Any("error", err))
+		os.Exit(1)
 	}
 
-	err = db.ApplyMigrations()
+	srv, err := server.New(cfg, logger)
 	if err != nil {
-		logger.Error("Failed to apply migrations", slog.Any("error", err))
-		return err
+		logger.Error("Failed to create server", slog.Any("error", err))
+		os.Exit(1)
 	}
 
-	mux := http.NewServeMux()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	mux.Handle("/", http.FileServer(http.Dir("./static")))
-
-	habitController := controllers.NewHabitController(db, logger)
-	mux.HandleFunc("GET /api/users/{userId}/habits", habitController.GetHabits)
-	mux.HandleFunc("POST /api/users/{userId}/habits", habitController.CreateHabit)
-	mux.HandleFunc("PUT /api/users/{userId}/habits", habitController.EditHabits)
-	mux.HandleFunc("DELETE /api/habits/{habitId}", habitController.DeleteHabit)
-	mux.HandleFunc("PUT /api/habits/{habitId}", habitController.EditHabit)
-
-	habitEntryController := controllers.NewHabitEntryController(db, logger)
-	mux.HandleFunc("POST /api/habitEntries", habitEntryController.CreateHabitEntry)
-	mux.HandleFunc("DELETE /api/habitEntries/{entryId}", habitEntryController.DeleteHabitEntry)
-
-	controllers.AddUserRoutes(mux, db, logger)
-
-	app := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:4321"},
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-	}).Handler(mux)
-	if err := http.ListenAndServe(args.listenAddr, app); err != nil {
-		fmt.Println(err)
-	}
-
-	return nil
-}
-
-func main() {
-	args := cmdArgs{listenAddr: *flag.String("listen-addr", ":8000", "server listen address")}
-	flag.Parse()
-
-	if err := run(os.Stdout, args); err != nil {
-		fmt.Fprintf(os.Stderr, "%s\n", err)
+	if err := srv.Start(ctx); err != nil {
+		logger.Error("Failed to start server", slog.Any("error", err))
 		os.Exit(1)
 	}
 }
