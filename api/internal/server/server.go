@@ -49,9 +49,11 @@ func (s *Server) Start(ctx context.Context) error {
 		Handler: corsHandler,
 	}
 
-	if err := s.srv.ListenAndServe(); err != nil {
-		s.logger.Error("server error", slog.Any("error", err))
-	}
+	go func() {
+		if err := s.srv.ListenAndServe(); err != nil {
+			s.logger.Error("server error", slog.Any("error", err))
+		}
+	}()
 
 	<-ctx.Done()
 
