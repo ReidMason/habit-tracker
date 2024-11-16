@@ -11,7 +11,7 @@ type User struct {
 
 func (s Sqlite) CreateUser(name string) (User, error) {
 	ctx := context.Background()
-	user, err := s.queries.CreateUser(ctx, name)
+	user, err := s.Queries.CreateUser(ctx, name)
 	if err != nil {
 		return User{}, err
 	}
@@ -24,7 +24,7 @@ func (s Sqlite) CreateUser(name string) (User, error) {
 
 func (s Sqlite) GetUsers() ([]User, error) {
 	ctx := context.Background()
-	user, err := s.queries.GetUsers(ctx)
+	user, err := s.Queries.GetUsers(ctx)
 	if err != nil {
 		return nil, err
 	}

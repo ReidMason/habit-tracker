@@ -46,7 +46,7 @@ func NewBasicHabitEntry(date time.Time, combo int, id int64) BasicHabitEntry {
 
 func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 	ctx := context.Background()
-	rawHabits, err := s.queries.GetHabits(ctx, userId)
+	rawHabits, err := s.Queries.GetHabits(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
 
 func (s Sqlite) GetHabit(id int64) (Habit, error) {
 	ctx := context.Background()
-	habit, err := s.queries.GetHabit(ctx, id)
+	habit, err := s.Queries.GetHabit(ctx, id)
 	if err != nil {
 		return Habit{}, err
 	}
@@ -106,14 +106,14 @@ func (s Sqlite) GetHabit(id int64) (Habit, error) {
 
 func (s Sqlite) DeleteHabit(id int64) error {
 	ctx := context.Background()
-	_, err := s.queries.DeleteHabit(ctx, id)
+	_, err := s.Queries.DeleteHabit(ctx, id)
 	return err
 }
 
 func (s Sqlite) UpdateHabit(id int64, name string, colour string, index int64, active bool) error {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
-	_, err := s.queries.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
+	_, err := s.Queries.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
 		ID:        id,
 		Name:      caser.String(name),
 		Colour:    colour,
@@ -127,7 +127,7 @@ func (s Sqlite) UpdateHabit(id int64, name string, colour string, index int64, a
 func (s Sqlite) CreateHabit(userId int64, name string, colour string, index int64) (Habit, error) {
 	ctx := context.Background()
 	caser := cases.Title(language.English)
-	habit, err := s.queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
+	habit, err := s.Queries.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
 		UserID: userId,
 		Name:   caser.String(name),
 		Colour: colour,

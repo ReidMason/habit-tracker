@@ -5,6 +5,8 @@ import (
 
 	"github.com/ReidMason/habit-tracker/internal/controllers"
 	"github.com/ReidMason/habit-tracker/internal/logger"
+	"github.com/ReidMason/habit-tracker/internal/services/habitEntriesService"
+	habitService "github.com/ReidMason/habit-tracker/internal/services/habitsService"
 	"github.com/ReidMason/habit-tracker/internal/storage"
 )
 
@@ -13,7 +15,10 @@ func Setup(db *storage.Sqlite, logger logger.Logger) *http.ServeMux {
 
 	mux.Handle("/", http.FileServer(http.Dir("./static")))
 
-	habitController := controllers.NewHabitController(db, logger)
+	habitEntryStore := habitEntriesService.NewHabitEntriesService(db.Queries, logger)
+	habitStore := habitService.NewHabitService(db.Queries, logger, habitEntryStore)
+
+	habitController := controllers.NewHabitController(db, logger, habitStore)
 	habitEntryController := controllers.NewHabitEntryController(db, logger)
 
 	setupHabitRoutes(mux, habitController)

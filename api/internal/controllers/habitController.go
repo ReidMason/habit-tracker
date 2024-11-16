@@ -7,18 +7,25 @@ import (
 	"strconv"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
+	"github.com/ReidMason/habit-tracker/internal/services/models"
 	"github.com/ReidMason/habit-tracker/internal/storage"
 )
 
-type HabitController struct {
-	db     *storage.Sqlite
-	logger logger.Logger
+type HabitStore interface {
+	GetHabits(userId int64) ([]models.Habit, error)
 }
 
-func NewHabitController(db *storage.Sqlite, logger logger.Logger) *HabitController {
+type HabitController struct {
+	db          *storage.Sqlite
+	habitsStore HabitStore
+	logger      logger.Logger
+}
+
+func NewHabitController(db *storage.Sqlite, logger logger.Logger, habitStore HabitStore) *HabitController {
 	return &HabitController{
-		db:     db,
-		logger: logger,
+		db:          db,
+		logger:      logger,
+		habitsStore: habitStore,
 	}
 }
 
@@ -30,14 +37,14 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habits, err := h.db.GetHabits(userId)
+	habits, err := h.habitsStore.GetHabits(userId)
 	if err != nil {
 		h.logger.Error("Failed to get habits", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	activeHabits := make([]storage.Habit, 0)
+	activeHabits := make([]models.Habit, 0)
 	for _, habit := range habits {
 		if habit.Active {
 			activeHabits = append(activeHabits, habit)

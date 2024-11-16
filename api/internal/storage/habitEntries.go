@@ -15,7 +15,7 @@ type HabitEntry struct {
 
 func (s Sqlite) CreateHabitEntry(habitId int64, date time.Time) (HabitEntry, error) {
 	ctx := context.Background()
-	habitEntry, err := s.queries.CreateHabitEntry(ctx, sqlite3Storage.CreateHabitEntryParams{
+	habitEntry, err := s.Queries.CreateHabitEntry(ctx, sqlite3Storage.CreateHabitEntryParams{
 		HabitID: habitId,
 		Date:    date.Format(time.DateOnly),
 	})
@@ -38,7 +38,7 @@ func (s Sqlite) CreateHabitEntry(habitId int64, date time.Time) (HabitEntry, err
 
 func (s Sqlite) DeleteHabitEntry(id int64) (HabitEntry, error) {
 	ctx := context.Background()
-	habitEntry, err := s.queries.DeleteHabitEntry(ctx, id)
+	habitEntry, err := s.Queries.DeleteHabitEntry(ctx, id)
 	if err != nil {
 		return HabitEntry{}, err
 	}
@@ -57,7 +57,7 @@ func (s Sqlite) DeleteHabitEntry(id int64) (HabitEntry, error) {
 
 func (s Sqlite) GetHabitEntries(habitId int64) ([]HabitEntry, error) {
 	ctx := context.Background()
-	habitEntries, err := s.queries.GetHabitEntries(ctx, habitId)
+	habitEntries, err := s.Queries.GetHabitEntries(ctx, habitId)
 	if err != nil {
 		return nil, err
 	}

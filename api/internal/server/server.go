@@ -50,6 +50,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	go func() {
+		s.logger.Info("server started", slog.String("addr", s.cfg.ListenAddr))
 		if err := s.srv.ListenAndServe(); err != nil {
 			s.logger.Error("server error", slog.Any("error", err))
 		}
