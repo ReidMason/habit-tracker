@@ -71,15 +71,6 @@ export async function deleteHabit(habitId: number) {
   }
 }
 
-export async function getHabit(habitId: number): Promise<Habit> {
-  const result = await fetch(`${baseUrl}/habits/${habitId}`);
-  const response = await result.json();
-
-  const data = habitSchema.parse(response);
-
-  return data;
-}
-
 export async function updateHabit(habit: Habit) {
   fetch(`${baseUrl}/habits/${habit.id}`, {
     method: "PUT",
