@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"sort"
 	"time"
 
 	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
@@ -42,46 +41,6 @@ func NewBasicHabitEntry(date time.Time, combo int, id int64) BasicHabitEntry {
 		Combo: combo,
 		Id:    id,
 	}
-}
-
-func (s Sqlite) GetHabits(userId int64) ([]Habit, error) {
-	ctx := context.Background()
-	rawHabits, err := s.Queries.GetHabits(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
-
-	habits := make([]Habit, len(rawHabits))
-
-	for i, u := range rawHabits {
-		entries, err := s.GetHabitEntries(u.ID)
-		if err != nil {
-			return nil, err
-		}
-
-		BasicHabitEntries := make([]BasicHabitEntry, len(entries))
-		combo := 0
-		var tomorrow time.Time
-		for j, entry := range entries {
-			if combo > 0 && entry.Date == tomorrow {
-				combo++
-			} else {
-				combo = 1
-			}
-
-			tomorrow = entry.Date.AddDate(0, 0, 1)
-
-			BasicHabitEntries[j] = NewBasicHabitEntry(entry.Date, combo, entry.Id)
-		}
-
-		habits[i] = NewHabit(u.ID, u.Name, u.Colour, u.Index, BasicHabitEntries, u.Active)
-	}
-
-	sort.Slice(habits, func(i, j int) bool {
-		return habits[i].Index < habits[j].Index
-	})
-
-	return habits, nil
 }
 
 func (s Sqlite) GetHabit(id int64) (Habit, error) {

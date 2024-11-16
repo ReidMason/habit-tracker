@@ -13,6 +13,7 @@ import (
 
 type HabitStore interface {
 	GetActiveHabits(userId int64) ([]models.Habit, error)
+	GetHabits(userId int64) ([]models.Habit, error)
 }
 
 type HabitController struct {
@@ -113,7 +114,7 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habits, err := h.db.GetHabits(userId)
+	habits, err := h.habitsStore.GetHabits(userId)
 	if err != nil {
 		h.logger.Error("Failed to get habits", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
