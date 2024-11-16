@@ -12,7 +12,7 @@ import (
 )
 
 type HabitStore interface {
-	GetHabits(userId int64) ([]models.Habit, error)
+	GetActiveHabits(userId int64) ([]models.Habit, error)
 }
 
 type HabitController struct {
@@ -37,22 +37,15 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habits, err := h.habitsStore.GetHabits(userId)
+	acitveHabits, err := h.habitsStore.GetActiveHabits(userId)
 	if err != nil {
 		h.logger.Error("Failed to get habits", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	activeHabits := make([]models.Habit, 0)
-	for _, habit := range habits {
-		if habit.Active {
-			activeHabits = append(activeHabits, habit)
-		}
-	}
-
-	h.logger.Debug("Got habits", slog.Any("habits", activeHabits))
-	successWithBody(w, activeHabits)
+	h.logger.Debug("Got habits", slog.Any("habits", acitveHabits))
+	successWithBody(w, acitveHabits)
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {

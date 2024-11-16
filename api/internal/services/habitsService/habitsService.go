@@ -31,6 +31,22 @@ func NewHabitService(storage HabitStorage, logger logger.Logger, habitEntryStore
 	}
 }
 
+func (s HabitService) GetActiveHabits(userId int64) ([]models.Habit, error) {
+	habits, err := s.GetHabits(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	activeHabits := make([]models.Habit, 0)
+	for _, habit := range habits {
+		if habit.Active {
+			activeHabits = append(activeHabits, habit)
+		}
+	}
+
+	return activeHabits, nil
+}
+
 func (s HabitService) GetHabits(userId int64) ([]models.Habit, error) {
 	ctx := context.Background()
 	rawHabits, err := s.storage.GetHabits(ctx, userId)
