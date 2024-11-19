@@ -50,7 +50,7 @@ export default function HabitRow({
         {...listeners}
       >
         <HabitContextMenu habit={habit} fetchHabits={fetchHabits} />
-        {habit.name}
+        <p className="text-ellipsis line-clamp-2">{habit.name}</p>
       </td>
       {getDaysInMonth().map((date) => {
         const entry = getMatchingEntry(habit.entries, date);
