@@ -49,7 +49,6 @@ export async function createHabit(
 
     return data;
   } catch (error) {
-    console.error(error);
     return {
       id: -1,
       name: "",
@@ -72,7 +71,7 @@ export async function deleteHabit(habitId: number) {
 }
 
 export async function updateHabit(habit: Habit) {
-  fetch(`${baseUrl}/habits/${habit.id}`, {
+  await fetch(`${baseUrl}/habits/${habit.id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
