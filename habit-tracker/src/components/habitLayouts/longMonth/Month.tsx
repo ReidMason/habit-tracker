@@ -4,7 +4,6 @@ import {
   closestCenter,
   DndContext,
   DragOverlay,
-  KeyboardSensor,
   PointerSensor,
   TouchSensor,
   useSensor,
@@ -56,9 +55,6 @@ export default function Month({
         delay: 250,
         tolerance: 5,
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
     }),
     useSensor(TouchSensor)
   );
@@ -126,9 +122,8 @@ export default function Month({
                 {daysInMonth.map((date) => (
                   <th
                     key={date.toJSON()}
-                    className={`${
-                      datesMatch(date, new Date()) ? "bg-ring/20" : ""
-                    } min-h-12 min-w-12 ring-1 ring-gray-300 bg-secondary text-secondary-foreground`}
+                    className={`${datesMatch(date, new Date()) ? "bg-ring/20" : ""
+                      } min-h-12 min-w-12 ring-1 ring-gray-300 bg-secondary text-secondary-foreground`}
                   >
                     {date.getDate()}
                   </th>
