@@ -25,7 +25,7 @@ export default function HabitGridElement({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between">
-        <p className="text-xl">{habit.name}</p>
+        <p className="text-xl truncate">{habit.name}</p>
         <HabitContextMenu habit={habit} fetchHabits={fetchHabits} />
       </div>
       <div className="grid grid-cols-7 border rounded-lg">
