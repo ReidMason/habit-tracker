@@ -1,18 +1,18 @@
 ---
-import '@/styles/globals.css';
-import Layout from '../layouts/Layout.astro';
-import ModeToggle from '../components/ModeToggle';
-import HabitWrapper from '../components/HabitWrapper';
+import "@/styles/globals.css";
+import Layout from "../layouts/Layout.astro";
+import ModeToggle from "../components/ModeToggle";
+import HabitWrapper from "../components/HabitWrapper";
 ---
 
 <Layout title="Habit tracker">
-<main>
-  <div class="flex justify-end p-4">
-    <ModeToggle client:load />
-  </div>
-  <div class="p-4 flex flex-col gap-4">
-    <h1 class="text-2xl font-bold">Habit tracker</h1>
-    <HabitWrapper client:load />
-  </div>
-</main>
+  <main>
+    <div class="flex justify-end p-4">
+      <ModeToggle client:load />
+    </div>
+    <div class="p-4 flex flex-col gap-4">
+      <h1 class="text-2xl font-bold">Habit tracker</h1>
+      <HabitWrapper client:load />
+    </div>
+  </main>
 </Layout>
