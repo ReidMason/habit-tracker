@@ -38,15 +38,15 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	acitveHabits, err := h.habitsStore.GetActiveHabits(userId)
+	activeHabits, err := h.habitsStore.GetActiveHabits(userId)
 	if err != nil {
 		h.logger.Error("Failed to get habits", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	h.logger.Debug("Got habits", slog.Any("habits", acitveHabits))
-	successWithBody(w, acitveHabits)
+	h.logger.Debug("Got habits", slog.Any("habits", activeHabits))
+	successWithBody(w, activeHabits)
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
