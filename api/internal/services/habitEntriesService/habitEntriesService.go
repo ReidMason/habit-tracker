@@ -6,7 +6,7 @@ import (
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
 	"github.com/ReidMason/habit-tracker/internal/services/models"
-	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
+	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/database/sqlite3"
 )
 
 type HabitEntryStorage interface {

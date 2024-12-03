@@ -5,12 +5,12 @@ import (
 	"embed"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
-	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
+	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/database/sqlite3"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pressly/goose/v3"
 )
 
-//go:embed migrations/*.sql
+//go:embed database/migrations/*.sql
 var embedMigrations embed.FS
 
 type Sqlite struct {

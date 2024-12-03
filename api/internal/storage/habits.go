@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
+	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/database/sqlite3"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )

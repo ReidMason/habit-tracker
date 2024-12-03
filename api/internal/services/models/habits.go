@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/sqlite3"
+	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/database/sqlite3"
 )
 
 type Habit struct {
