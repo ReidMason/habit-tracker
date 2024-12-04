@@ -1,4 +1,4 @@
-package habitService
+package habitsService
 
 import (
 	"context"
@@ -36,13 +36,13 @@ func NewHabitService(storage HabitStorage, logger logger.Logger, habitEntryStore
 	}
 }
 
-func (s HabitService) GetActiveHabits(userId int64) ([]models.Habit, error) {
+func (s HabitService) GetActiveHabits(userId int64) ([]Habit, error) {
 	habits, err := s.GetHabits(userId)
 	if err != nil {
 		return nil, err
 	}
 
-	activeHabits := make([]models.Habit, 0)
+	activeHabits := make([]Habit, 0)
 	for _, habit := range habits {
 		if habit.Active {
 			activeHabits = append(activeHabits, habit)
@@ -52,14 +52,14 @@ func (s HabitService) GetActiveHabits(userId int64) ([]models.Habit, error) {
 	return activeHabits, nil
 }
 
-func (s HabitService) GetHabits(userId int64) ([]models.Habit, error) {
+func (s HabitService) GetHabits(userId int64) ([]Habit, error) {
 	ctx := context.Background()
 	rawHabits, err := s.storage.GetHabits(ctx, userId)
 	if err != nil {
 		return nil, err
 	}
 
-	habits := make([]models.Habit, len(rawHabits))
+	habits := make([]Habit, len(rawHabits))
 
 	for i, habit := range rawHabits {
 		entries, err := s.habitEntryStore.GetHabitEntries(habit.ID)
@@ -67,7 +67,7 @@ func (s HabitService) GetHabits(userId int64) ([]models.Habit, error) {
 			return nil, err
 		}
 
-		habits[i] = models.NewHabit(habit.ID, habit.Name, habit.Colour, habit.Index, entries, habit.Active)
+		habits[i] = NewHabit(habit.ID, habit.Name, habit.Colour, habit.Index, entries, habit.Active)
 	}
 
 	sort.Slice(habits, func(i, j int) bool {
@@ -77,9 +77,9 @@ func (s HabitService) GetHabits(userId int64) ([]models.Habit, error) {
 	return habits, nil
 }
 
-func (s HabitService) UpdateHabits(habits []models.Habit) ([]models.Habit, error) {
+func (s HabitService) UpdateHabits(habits []Habit) ([]Habit, error) {
 	ctx := context.Background()
-	updatedHabits := make([]models.Habit, len(habits))
+	updatedHabits := make([]Habit, len(habits))
 	for _, habit := range habits {
 		updatedHabit, err := s.storage.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
 			Name:      habit.Name,
@@ -93,19 +93,19 @@ func (s HabitService) UpdateHabits(habits []models.Habit) ([]models.Habit, error
 			return updatedHabits, err
 		}
 
-		updatedHabits = append(updatedHabits, models.NewHabit(
+		updatedHabits = append(updatedHabits, NewHabit(
 			updatedHabit.ID, updatedHabit.Name, updatedHabit.Colour, updatedHabit.Index, nil, updatedHabit.Active))
 	}
 
 	return updatedHabits, nil
 }
 
-func (s HabitService) CreateHabit(userId int64, name string, colour string) (models.Habit, error) {
+func (s HabitService) CreateHabit(userId int64, name string, colour string) (Habit, error) {
 	ctx := context.Background()
 	habits, err := s.GetHabits(userId)
 	if err != nil {
 		s.logger.Error("Failed to get habits", slog.Any("error", err))
-		return models.Habit{}, err
+		return Habit{}, err
 	}
 
 	var highestIndex int64 = 0
@@ -123,19 +123,19 @@ func (s HabitService) CreateHabit(userId int64, name string, colour string) (mod
 	})
 
 	if err != nil {
-		return models.Habit{}, err
+		return Habit{}, err
 	}
 
-	return models.NewHabit(createdHabit.ID, createdHabit.Name, createdHabit.Colour, createdHabit.Index, nil, createdHabit.Active), nil
+	return NewHabit(createdHabit.ID, createdHabit.Name, createdHabit.Colour, createdHabit.Index, nil, createdHabit.Active), nil
 }
 
-func (s HabitService) DeleteHabit(habitId int64) (models.Habit, error) {
+func (s HabitService) DeleteHabit(habitId int64) (Habit, error) {
 	ctx := context.Background()
 
 	deletedHabit, err := s.storage.DeleteHabit(ctx, habitId)
 	if err != nil {
-		return models.Habit{}, err
+		return Habit{}, err
 	}
 
-	return models.NewHabit(deletedHabit.ID, deletedHabit.Name, deletedHabit.Colour, deletedHabit.Index, nil, deletedHabit.Active), nil
+	return NewHabit(deletedHabit.ID, deletedHabit.Name, deletedHabit.Colour, deletedHabit.Index, nil, deletedHabit.Active), nil
 }

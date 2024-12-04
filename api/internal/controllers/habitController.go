@@ -7,15 +7,15 @@ import (
 	"strconv"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
-	"github.com/ReidMason/habit-tracker/internal/services/models"
+	"github.com/ReidMason/habit-tracker/internal/services/habitsService"
 )
 
 type HabitStore interface {
-	GetActiveHabits(userId int64) ([]models.Habit, error)
-	GetHabits(userId int64) ([]models.Habit, error)
-	UpdateHabits(habits []models.Habit) ([]models.Habit, error)
-	DeleteHabit(habitId int64) (models.Habit, error)
-	CreateHabit(userId int64, name string, colour string) (models.Habit, error)
+	GetActiveHabits(userId int64) ([]habitsService.Habit, error)
+	GetHabits(userId int64) ([]habitsService.Habit, error)
+	UpdateHabits(habits []habitsService.Habit) ([]habitsService.Habit, error)
+	DeleteHabit(habitId int64) (habitsService.Habit, error)
+	CreateHabit(userId int64, name string, colour string) (habitsService.Habit, error)
 }
 
 type HabitController struct {
@@ -50,7 +50,7 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
-	var habits []models.Habit
+	var habits []habitsService.Habit
 	err := json.NewDecoder(r.Body).Decode(&habits)
 	if err != nil {
 		h.logger.Error("Failed to decode habits", slog.Any("error", err))
@@ -77,7 +77,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var habit models.Habit
+	var habit habitsService.Habit
 	err = json.NewDecoder(r.Body).Decode(&habit)
 	if err != nil {
 		h.logger.Error("Failed to decode habit", slog.Any("error", err))
@@ -85,7 +85,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	updatedHabits, err := h.habitsStore.UpdateHabits([]models.Habit{habit})
+	updatedHabits, err := h.habitsStore.UpdateHabits([]habitsService.Habit{habit})
 	if err != nil {
 		h.logger.Error("Failed to edit habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -104,7 +104,7 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var habit models.Habit
+	var habit habitsService.Habit
 	err = json.NewDecoder(r.Body).Decode(&habit)
 	if err != nil {
 		h.logger.Error("Failed to decode habit", slog.Any("error", err))
