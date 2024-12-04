@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
@@ -117,8 +118,8 @@ func (s HabitService) CreateHabit(userId int64, name string, colour string) (Hab
 
 	createdHabit, err := s.storage.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
 		UserID: userId,
-		Name:   name,
-		Colour: colour,
+		Name:   strings.TrimSpace(name),
+		Colour: strings.TrimSpace(colour),
 		Index:  highestIndex + 1,
 	})
 
