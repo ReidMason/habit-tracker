@@ -8,23 +8,23 @@ import (
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
 	"github.com/ReidMason/habit-tracker/internal/services/models"
-	"github.com/ReidMason/habit-tracker/internal/storage"
 )
 
 type HabitStore interface {
 	GetActiveHabits(userId int64) ([]models.Habit, error)
 	GetHabits(userId int64) ([]models.Habit, error)
+	UpdateHabits(habits []models.Habit) ([]models.Habit, error)
+	DeleteHabit(habitId int64) (models.Habit, error)
+	CreateHabit(userId int64, name string, colour string) (models.Habit, error)
 }
 
 type HabitController struct {
-	db          *storage.Sqlite
 	habitsStore HabitStore
 	logger      logger.Logger
 }
 
-func NewHabitController(db *storage.Sqlite, logger logger.Logger, habitStore HabitStore) *HabitController {
+func NewHabitController(logger logger.Logger, habitStore HabitStore) *HabitController {
 	return &HabitController{
-		db:          db,
 		logger:      logger,
 		habitsStore: habitStore,
 	}
@@ -50,7 +50,7 @@ func (h *HabitController) GetHabits(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
-	var habits []storage.Habit
+	var habits []models.Habit
 	err := json.NewDecoder(r.Body).Decode(&habits)
 	if err != nil {
 		h.logger.Error("Failed to decode habits", slog.Any("error", err))
@@ -58,17 +58,15 @@ func (h *HabitController) EditHabits(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, habit := range habits {
-		err = h.db.UpdateHabit(habit.Id, habit.Name, habit.Colour, habit.Index, habit.Active)
-		if err != nil {
-			h.logger.Error("Failed to edit habit", slog.Any("error", err))
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	updatedHabits, err := h.habitsStore.UpdateHabits(habits)
+	if err != nil {
+		h.logger.Error("Failed to edit habit", slog.Any("error", err))
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	h.logger.Info("Edited habits", slog.Any("habits", habits))
-	success(w)
+	successWithBody(w, updatedHabits)
 }
 
 func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +77,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var habit storage.Habit
+	var habit models.Habit
 	err = json.NewDecoder(r.Body).Decode(&habit)
 	if err != nil {
 		h.logger.Error("Failed to decode habit", slog.Any("error", err))
@@ -87,7 +85,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.db.UpdateHabit(habitId, habit.Name, habit.Colour, habit.Index, habit.Active)
+	updatedHabits, err := h.habitsStore.UpdateHabits([]models.Habit{habit})
 	if err != nil {
 		h.logger.Error("Failed to edit habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -95,7 +93,7 @@ func (h *HabitController) EditHabit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Edited habit", slog.Int64("habitId", habitId))
-	success(w)
+	successWithBody(w, updatedHabits)
 }
 
 func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
@@ -106,7 +104,7 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var habit storage.Habit
+	var habit models.Habit
 	err = json.NewDecoder(r.Body).Decode(&habit)
 	if err != nil {
 		h.logger.Error("Failed to decode habit", slog.Any("error", err))
@@ -114,21 +112,7 @@ func (h *HabitController) CreateHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	habits, err := h.habitsStore.GetHabits(userId)
-	if err != nil {
-		h.logger.Error("Failed to get habits", slog.Any("error", err))
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	var highestIndex int64 = 0
-	for _, h := range habits {
-		if h.Index > highestIndex {
-			highestIndex = h.Index
-		}
-	}
-
-	createdHabit, err := h.db.CreateHabit(userId, habit.Name, habit.Colour, highestIndex+1)
+	createdHabit, err := h.habitsStore.CreateHabit(userId, habit.Name, habit.Colour)
 	if err != nil {
 		h.logger.Error("Failed to create habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -147,7 +131,7 @@ func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.db.DeleteHabit(habitId)
+	deletedHabit, err := h.habitsStore.DeleteHabit(habitId)
 	if err != nil {
 		h.logger.Error("Failed to delete habit", slog.Any("error", err))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -155,5 +139,5 @@ func (h *HabitController) DeleteHabit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.logger.Info("Deleted habit", slog.Int64("habitId", habitId))
-	success(w)
+	successWithBody(w, deletedHabit)
 }

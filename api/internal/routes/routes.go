@@ -18,7 +18,7 @@ func Setup(db *storage.Sqlite, logger logger.Logger) *http.ServeMux {
 	habitEntryStore := habitEntriesService.NewHabitEntriesService(db.Queries, logger)
 	habitStore := habitService.NewHabitService(db.Queries, logger, habitEntryStore)
 
-	habitController := controllers.NewHabitController(db, logger, habitStore)
+	habitController := controllers.NewHabitController(logger, habitStore)
 	habitEntryController := controllers.NewHabitEntryController(db, logger)
 
 	setupHabitRoutes(mux, habitController)

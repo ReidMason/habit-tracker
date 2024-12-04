@@ -2,7 +2,9 @@ package habitService
 
 import (
 	"context"
+	"log/slog"
 	"sort"
+	"time"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
 	"github.com/ReidMason/habit-tracker/internal/services/models"
@@ -11,6 +13,9 @@ import (
 
 type HabitStorage interface {
 	GetHabits(ctx context.Context, userID int64) ([]sqlite3Storage.Habit, error)
+	UpdateHabit(ctx context.Context, arg sqlite3Storage.UpdateHabitParams) (sqlite3Storage.Habit, error)
+	CreateHabit(ctx context.Context, arg sqlite3Storage.CreateHabitParams) (sqlite3Storage.Habit, error)
+	DeleteHabit(ctx context.Context, id int64) (sqlite3Storage.Habit, error)
 }
 
 type HabitEntryStore interface {
@@ -70,4 +75,67 @@ func (s HabitService) GetHabits(userId int64) ([]models.Habit, error) {
 	})
 
 	return habits, nil
+}
+
+func (s HabitService) UpdateHabits(habits []models.Habit) ([]models.Habit, error) {
+	ctx := context.Background()
+	updatedHabits := make([]models.Habit, len(habits))
+	for _, habit := range habits {
+		updatedHabit, err := s.storage.UpdateHabit(ctx, sqlite3Storage.UpdateHabitParams{
+			Name:      habit.Name,
+			Colour:    habit.Colour,
+			Index:     habit.Index,
+			Active:    habit.Active,
+			UpdatedAt: time.Now().Format(time.RFC3339),
+			ID:        habit.Id,
+		})
+		if err != nil {
+			return updatedHabits, err
+		}
+
+		updatedHabits = append(updatedHabits, models.NewHabit(
+			updatedHabit.ID, updatedHabit.Name, updatedHabit.Colour, updatedHabit.Index, nil, updatedHabit.Active))
+	}
+
+	return updatedHabits, nil
+}
+
+func (s HabitService) CreateHabit(userId int64, name string, colour string) (models.Habit, error) {
+	ctx := context.Background()
+	habits, err := s.GetHabits(userId)
+	if err != nil {
+		s.logger.Error("Failed to get habits", slog.Any("error", err))
+		return models.Habit{}, err
+	}
+
+	var highestIndex int64 = 0
+	for _, h := range habits {
+		if h.Index > highestIndex {
+			highestIndex = h.Index
+		}
+	}
+
+	createdHabit, err := s.storage.CreateHabit(ctx, sqlite3Storage.CreateHabitParams{
+		UserID: userId,
+		Name:   name,
+		Colour: colour,
+		Index:  highestIndex + 1,
+	})
+
+	if err != nil {
+		return models.Habit{}, err
+	}
+
+	return models.NewHabit(createdHabit.ID, createdHabit.Name, createdHabit.Colour, createdHabit.Index, nil, createdHabit.Active), nil
+}
+
+func (s HabitService) DeleteHabit(habitId int64) (models.Habit, error) {
+	ctx := context.Background()
+
+	deletedHabit, err := s.storage.DeleteHabit(ctx, habitId)
+	if err != nil {
+		return models.Habit{}, err
+	}
+
+	return models.NewHabit(deletedHabit.ID, deletedHabit.Name, deletedHabit.Colour, deletedHabit.Index, nil, deletedHabit.Active), nil
 }
