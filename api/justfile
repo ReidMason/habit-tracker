@@ -1,2 +1,9 @@
 sqlc-generate:
   cd internal/storage/sqlc && sqlc generate 
+
+just test:
+  go test ./...
+
+test-cover:
+  go test ./... -coverprofile=coverage/cover.out
+  go tool cover -html=coverage/cover.out
