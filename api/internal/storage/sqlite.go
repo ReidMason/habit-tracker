@@ -45,5 +45,5 @@ func (s Sqlite) Reset() error {
 
 func (s Sqlite) ApplyMigrations() error {
 	s.log.Info("Applying migrations")
-	return goose.Up(s.db, "migrations")
+	return goose.Up(s.db, "database/migrations")
 }
