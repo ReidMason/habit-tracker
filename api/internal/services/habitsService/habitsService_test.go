@@ -97,10 +97,10 @@ func TestCreateHabit(t *testing.T) {
 	tests := []struct {
 		newHabitName   string
 		newHabitColour string
-		newHabitId     int64
 		name           string
 		habits         []sqlite3Storage.Habit
 		expectedHabit  Habit
+		newHabitId     int64
 	}{
 		{
 			name:           "creates a habit",
