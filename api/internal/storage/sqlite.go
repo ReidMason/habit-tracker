@@ -3,6 +3,8 @@ package storage
 import (
 	"database/sql"
 	"embed"
+	"os"
+	"path/filepath"
 
 	"github.com/ReidMason/habit-tracker/internal/logger"
 	sqlite3Storage "github.com/ReidMason/habit-tracker/internal/storage/database/sqlite3"
@@ -20,6 +22,16 @@ type Sqlite struct {
 }
 
 func NewSqliteStorage(databasePath string, logger logger.Logger) (*Sqlite, error) {
+	absoluteDir, err := filepath.Abs(filepath.Dir(databasePath))
+	if err != nil {
+		return nil, err
+	}
+
+	err = os.MkdirAll(absoluteDir, 0755)
+	if err != nil {
+		return nil, err
+	}
+
 	db, err := sql.Open("sqlite3", databasePath+"?_foreign_keys=on")
 	if err != nil {
 		return nil, err
