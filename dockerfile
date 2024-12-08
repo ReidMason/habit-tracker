@@ -31,4 +31,5 @@ WORKDIR /app
 COPY --from=api-builder /app/habit-tracker ./habit-tracker
 COPY --from=web-builder /app/dist ./static
 
+EXPOSE 8000
 ENTRYPOINT ["./habit-tracker"]
